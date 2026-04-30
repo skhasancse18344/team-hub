@@ -1,15 +1,8 @@
-import Image, { type ImageProps } from "next/image";
+import Image from "next/image";
 import { Button } from "@repo/ui/button";
 import styles from "./page.module.css";
 
-type Props = Omit<ImageProps, "src"> & {
-  srcLight: string;
-  srcDark: string;
-};
-
-const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
-
+const ThemeImage = ({ srcLight, srcDark, ...rest }) => {
   return (
     <>
       <Image {...rest} src={srcLight} className="imgLight" />
@@ -33,7 +26,7 @@ export default function Home() {
         />
         <ol>
           <li>
-            Get started by editing <code>apps/web/app/page.tsx</code>
+            Get started by editing <code>apps/web/app/page.jsx</code>
           </li>
           <li>Save and see your changes instantly.</li>
         </ol>
