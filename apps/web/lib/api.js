@@ -288,3 +288,24 @@ export async function deleteAnnouncementCommentReq(workspaceId, annId, commentId
     `/api/workspaces/${workspaceId}/announcements/${annId}/comments/${commentId}`
   );
 }
+
+// ─── Tasks (Action Items) ─────────────────────────────────────────────────────
+
+export async function fetchTasks(workspaceId, params = {}) {
+  const { data } = await api.get(`/api/workspaces/${workspaceId}/tasks`, { params });
+  return data; // { items, total, page, limit }
+}
+
+export async function createTaskReq(workspaceId, payload) {
+  const { data } = await api.post(`/api/workspaces/${workspaceId}/tasks`, payload);
+  return data.item;
+}
+
+export async function updateTaskReq(workspaceId, itemId, payload) {
+  const { data } = await api.patch(`/api/workspaces/${workspaceId}/tasks/${itemId}`, payload);
+  return data.item;
+}
+
+export async function deleteTaskReq(workspaceId, itemId) {
+  await api.delete(`/api/workspaces/${workspaceId}/tasks/${itemId}`);
+}

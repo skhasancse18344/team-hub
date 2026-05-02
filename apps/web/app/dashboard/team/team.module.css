@@ -1,0 +1,470 @@
+/* ─── Header ────────────────────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--text-2);
+  margin: 4px 0 0;
+}
+
+/* ─── Toolbar ────────────────────────────────────────────────────────────────── */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.searchWrap {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 360px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-3);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-size: 0.875rem;
+  padding: 8px 32px 8px 34px;
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+.searchInput::placeholder { color: var(--text-3); }
+.searchInput:focus { border-color: var(--accent); }
+
+.clearBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+}
+.clearBtn:hover { color: var(--text); }
+
+.roleFilterSelect {
+  appearance: none;
+  background: var(--bg-2);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  color: var(--text-2);
+  font-size: 0.8rem;
+  padding: 7px 12px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.roleFilterSelect:focus,
+.roleFilterSelect:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* ─── Section ────────────────────────────────────────────────────────────────── */
+
+.section {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.count {
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  min-width: 22px;
+  text-align: center;
+}
+
+/* ─── Table header ─────────────────────────────────────────────────────────── */
+
+.tableHead {
+  display: grid;
+  grid-template-columns: 1fr 140px 160px 80px;
+  padding: 9px 20px;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ─── Member List ─────────────────────────────────────────────────────────── */
+
+.memberList {
+  /* nothing special needed */
+}
+
+.memberRow {
+  display: grid;
+  grid-template-columns: 1fr 140px 160px 80px;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.memberRow:last-child { border-bottom: none; }
+.memberRow:hover { background: var(--surface); }
+
+.memberRowMe { background: rgba(99, 102, 241, 0.04); }
+.memberRowMe:hover { background: rgba(99, 102, 241, 0.07); }
+
+.memberAv {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.avImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.memberInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding-right: 12px;
+  /* First column: avatar + info */
+  grid-column: initial; /* stays in the 1fr column */
+}
+
+/* Redefine grid to have avatar + info together */
+.memberRow {
+  display: grid;
+  grid-template-columns: 38px 1fr 140px 160px 80px;
+  gap: 0 12px;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+
+.tableHead {
+  display: grid;
+  grid-template-columns: 38px 1fr 140px 160px 80px;
+  gap: 0 12px;
+  padding: 9px 20px;
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.memberName {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.memberEmail {
+  font-size: 0.78rem;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.youChip {
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--accent);
+  padding: 1px 7px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* ─── Role ────────────────────────────────────────────────────────────────── */
+
+.memberRole {
+  display: flex;
+  align-items: center;
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.roleSelectWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.roleSelect {
+  appearance: none;
+  background: var(--bg-3);
+  border: 1px solid var(--border-2);
+  border-radius: var(--r-sm);
+  color: var(--text-2);
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.roleSelect:hover,
+.roleSelect:focus { border-color: var(--accent); color: var(--text); }
+
+/* ─── Joined ────────────────────────────────────────────────────────────── */
+
+.memberJoined {
+  font-size: 0.78rem;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+/* ─── Actions ───────────────────────────────────────────────────────────── */
+
+.memberActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.iconBtn:hover { background: var(--surface); color: var(--text); }
+.danger { color: #ef4444 !important; }
+.dangerHover:hover { color: #ef4444 !important; background: rgba(239, 68, 68, 0.1) !important; }
+
+/* ─── Invite List ────────────────────────────────────────────────────────── */
+
+.inviteList { /* nothing */ }
+
+.inviteRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.inviteRow:last-child { border-bottom: none; }
+.inviteRow:hover { background: var(--surface); }
+
+.inviteIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  flex-shrink: 0;
+}
+
+.inviteInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.inviteEmail {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inviteExpiry {
+  font-size: 0.76rem;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+/* ─── Danger section ─────────────────────────────────────────────────────── */
+
+.dangerSection {
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.dangerTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ef4444;
+  margin: 0 0 6px;
+  padding: 16px 20px 0;
+}
+
+.dangerDesc {
+  font-size: 0.85rem;
+  color: var(--text-2);
+  margin: 0;
+  padding: 0 20px 16px;
+  line-height: 1.5;
+}
+
+.dangerDesc strong { color: var(--text); }
+
+.dangerSection .memberActions,
+.dangerSection button {
+  margin: 0 20px 16px;
+}
+
+/* ─── Misc States ────────────────────────────────────────────────────────── */
+
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px;
+  color: var(--text-2);
+  font-size: 0.875rem;
+}
+
+.empty {
+  padding: 28px 20px;
+  text-align: center;
+  color: var(--text-3);
+  font-size: 0.875rem;
+}
+
+.inlineLink {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+.inlineLink:hover { color: var(--text); }
+
+.errorBanner {
+  margin-bottom: 16px;
+  padding: 10px 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--r-sm);
+  color: #ef4444;
+  font-size: 0.85rem;
+}
+
+.noWorkspace {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 60vh;
+  text-align: center;
+  color: var(--text-2);
+}
+.noWorkspace h2 { font-size: 1.1rem; margin: 0; }
+.noWorkspace p  { margin: 0; font-size: 0.9rem; color: var(--text-3); }
+
+/* ─── Spin ───────────────────────────────────────────────────────────────── */
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 0.8s linear infinite; }

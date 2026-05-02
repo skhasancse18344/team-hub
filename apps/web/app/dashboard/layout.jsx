@@ -5,19 +5,21 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Building2, Target, MapPin, Users, Megaphone,
-  User, Settings, LogOut, Rocket,
+  User, Settings, LogOut, Rocket, ListTodo,
 } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useWorkspaceStore } from "../../store/useWorkspaceStore";
+import { useGoalStore } from "../../store/useGoalStore";
 import WorkspaceSwitcher from "../../components/WorkspaceSwitcher";
 
 const navItems = [
   { href: "/dashboard",               Icon: LayoutDashboard, label: "Overview" },
-  { href: "/dashboard/workspaces",    Icon: Building2,       label: "Workspaces",    badge: "3" },
-  { href: "/dashboard/goals",         Icon: Target,          label: "Goals",          badge: "12" },
+  { href: "/dashboard/workspaces",    Icon: Building2,       label: "Workspaces",    badgeKey: "workspaces" },
+  { href: "/dashboard/goals",         Icon: Target,          label: "Goals",          badgeKey: "goals" },
 //   { href: "/dashboard/milestones",    Icon: MapPin,          label: "Milestones" },
   { href: "/dashboard/team",          Icon: Users,           label: "Team" },
   { href: "/dashboard/announcements", Icon: Megaphone,       label: "Announcements" },
+  { href: "/dashboard/tasks",          Icon: ListTodo,        label: "Tasks" },
 ];
 
 const secondaryItems = [
@@ -29,7 +31,13 @@ export default function DashboardLayout({ children }) {
   const pathname  = usePathname();
   const router    = useRouter();
   const { user, isAuthenticated, initialized, initialize, logout } = useAuthStore();
-  const fetchWorkspaces = useWorkspaceStore((s) => s.fetchWorkspaces);
+  const { workspaces, fetchWorkspaces } = useWorkspaceStore();
+  const { total: goalTotal } = useGoalStore();
+
+  const badgeCounts = {
+    workspaces: workspaces.length || null,
+    goals:      goalTotal        || null,
+  };
 
   useEffect(() => { initialize(); }, [initialize]);
 
@@ -76,7 +84,9 @@ export default function DashboardLayout({ children }) {
         <div className="sidebar-section">
           <div className="sidebar-heading">Main</div>
           <ul className="sidebar-nav">
-            {navItems.map((item) => (
+            {navItems.map((item) => {
+              const badge = item.badgeKey ? badgeCounts[item.badgeKey] : null;
+              return (
               <li key={item.href}>
                 <Link
                   href={item.href}
@@ -84,10 +94,11 @@ export default function DashboardLayout({ children }) {
                 >
                   <span className="sicon"><item.Icon size={16} /></span>
                   {item.label}
-                  {item.badge && <span className="sbadge">{item.badge}</span>}
+                  {badge ? <span className="sbadge">{badge}</span> : null}
                 </Link>
               </li>
-            ))}
+              );
+            })}
           </ul>
         </div>
 

@@ -1,14 +1,20 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Building2, Users, Target, Plus, ArrowRight, Loader2 } from "lucide-react";
+import { Building2, Users, Target, Plus, ArrowRight, Loader2, Mail, Check, X } from "lucide-react";
 import { useWorkspaceStore } from "../../../store/useWorkspaceStore";
 import styles from "./workspaces.module.css";
 
 export default function WorkspacesPage() {
   const router = useRouter();
-  const { workspaces, loading, error, fetchWorkspaces, createWorkspace, setActiveWorkspace } =
-    useWorkspaceStore();
+  const {
+    workspaces, loading, error, fetchWorkspaces, createWorkspace, setActiveWorkspace,
+    myInvites, fetchMyInvites, acceptInvite,
+  } = useWorkspaceStore();
+
+  const [accepting, setAccepting] = useState(null); // token being accepted
+  const [declining, setDeclining] = useState(null); // token being declined
+  const [inviteError, setInviteError] = useState("");
 
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
@@ -18,7 +24,29 @@ export default function WorkspacesPage() {
 
   useEffect(() => {
     fetchWorkspaces();
+    fetchMyInvites();
   }, []);
+
+  async function handleAcceptInvite(token) {
+    setAccepting(token);
+    setInviteError("");
+    try {
+      await acceptInvite(token);
+    } catch (err) {
+      setInviteError(err?.response?.data?.error ?? "Failed to accept invite");
+    } finally {
+      setAccepting(null);
+    }
+  }
+
+  async function handleDeclineInvite(token) {
+    // Just remove from local list — no backend "decline" needed
+    setDeclining(token);
+    useWorkspaceStore.setState((s) => ({
+      myInvites: s.myInvites.filter((i) => i.token !== token),
+    }));
+    setDeclining(null);
+  }
 
   async function handleCreate(e) {
     e.preventDefault();
@@ -58,6 +86,54 @@ export default function WorkspacesPage() {
       </div>
 
       {error && <div className={styles.errorBanner}>{error}</div>}
+
+      {/* ── My Invitations ─────────────────────────────────────────────────── */}
+      {myInvites.length > 0 && (
+        <div className={styles.invitesSection}>
+          <h2 className={styles.invitesTitle}>
+            <Mail size={16} />
+            Pending Invitations
+            <span className={styles.invitesBadge}>{myInvites.length}</span>
+          </h2>
+          {inviteError && <p className={styles.inviteError}>{inviteError}</p>}
+          <div className={styles.invitesList}>
+            {myInvites.map((invite) => (
+              <div key={invite.id} className={styles.inviteRow}>
+                <div
+                  className={styles.inviteColor}
+                  style={{ background: invite.workspace?.color ?? "var(--accent)" }}
+                />
+                <div className={styles.inviteInfo}>
+                  <span className={styles.inviteWsName}>{invite.workspace?.name}</span>
+                  <span className={styles.inviteMeta}>
+                    Invited by {invite.invitedBy?.name} · {invite.role}
+                  </span>
+                </div>
+                <div className={styles.inviteActions}>
+                  <button
+                    className="btn btn-primary btn-sm"
+                    disabled={accepting === invite.token}
+                    onClick={() => handleAcceptInvite(invite.token)}
+                  >
+                    {accepting === invite.token
+                      ? <Loader2 size={13} className={styles.spin} />
+                      : <Check size={13} />}
+                    Accept
+                  </button>
+                  <button
+                    className="btn btn-ghost btn-sm"
+                    disabled={declining === invite.token}
+                    onClick={() => handleDeclineInvite(invite.token)}
+                  >
+                    <X size={13} />
+                    Decline
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {showForm && (
         <div className={styles.formCard}>

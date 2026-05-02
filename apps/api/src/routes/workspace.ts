@@ -3,6 +3,7 @@ import { authenticate } from "../middleware/authenticate";
 import { requireWorkspaceRole } from "../middleware/requireWorkspaceRole";
 import goalRouter from "./goal";
 import announcementRouter from "./announcement";
+import taskRouter from "./task";
 import {
   createWorkspace,
   getMyWorkspaces,
@@ -49,6 +50,9 @@ router.use("/:id/goals", goalRouter);
 
 // ── Announcements (nested router, inherits authenticate) ──────────────────────
 router.use("/:id/announcements", announcementRouter);
+
+// ── Tasks / Action Items ──────────────────────────────────────────────────────
+router.use("/:id/tasks", taskRouter);
 
 export default router;
 
