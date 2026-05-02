@@ -1,7 +1,7 @@
 ﻿import Link from "next/link";
 import Footer from "../components/Footer";
 
-/* â”€â”€ SVG icon helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── SVG icon helpers ──────────────────────────────────────────────── */
 function Check() {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, marginTop: 3 }}>
@@ -10,24 +10,24 @@ function Check() {
   );
 }
 
-/* â”€â”€ Features data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Features data ─────────────────────────────────────────────────── */
 const features = [
-  { icon: "ðŸŽ¯", cls: "fi-brand",   title: "Goal Tracking",        desc: "Set OKRs, KPIs, or custom goals. Break them into milestones and track progress in real time." },
-  { icon: "ðŸ¢", cls: "fi-cyan",    title: "Team Workspaces",      desc: "Separate spaces for each team or project. Keep work organised and context-switched in seconds." },
-  { icon: "âš¡", cls: "fi-emerald", title: "Real-time Updates",    desc: "Live notifications and activity feeds keep everyone on the same page without endless meetings." },
-  { icon: "ðŸ“£", cls: "fi-amber",   title: "Announcements",        desc: "Broadcast important updates across your org. React, comment, and keep the conversation going." },
-  { icon: "ðŸ”", cls: "fi-violet",  title: "Role-based Access",    desc: "Owners, Admins, and Members. Fine-grained control so the right people see the right things." },
-  { icon: "ðŸ“Š", cls: "fi-rose",    title: "Progress Insights",    desc: "Beautiful dashboards that show where you are vs. where you need to be. No spreadsheets required." },
+  { icon: "🎯", cls: "fi-brand",   title: "Goal Tracking",        desc: "Set OKRs, KPIs, or custom goals. Break them into milestones and track progress in real time." },
+  { icon: "🏢", cls: "fi-cyan",    title: "Team Workspaces",      desc: "Separate spaces for each team or project. Keep work organised and context-switched in seconds." },
+  { icon: "⚡", cls: "fi-emerald", title: "Real-time Updates",    desc: "Live notifications and activity feeds keep everyone on the same page without endless meetings." },
+  { icon: "📣", cls: "fi-amber",   title: "Announcements",        desc: "Broadcast important updates across your org. React, comment, and keep the conversation going." },
+  { icon: "🔐", cls: "fi-violet",  title: "Role-based Access",    desc: "Owners, Admins, and Members. Fine-grained control so the right people see the right things." },
+  { icon: "📊", cls: "fi-rose",    title: "Progress Insights",    desc: "Beautiful dashboards that show where you are vs. where you need to be. No spreadsheets required." },
 ];
 
-/* â”€â”€ Testimonials â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Testimonials ──────────────────────────────────────────────────── */
 const testimonials = [
-  { stars: "â˜…â˜…â˜…â˜…â˜…", text: "TeamHub completely transformed how our engineering org aligns on quarterly goals. We actually ship faster now.", name: "Sarah K.", role: "VP Engineering Â· Acme Inc", grad: "linear-gradient(135deg,#6366f1,#8b5cf6)" },
-  { stars: "â˜…â˜…â˜…â˜…â˜…", text: "Finally, a tool that doesn't get in the way. The milestone tracking alone saved us hours of status meetings every week.", name: "James R.", role: "Product Lead Â· StartupXYZ", grad: "linear-gradient(135deg,#06b6d4,#6366f1)" },
-  { stars: "â˜…â˜…â˜…â˜…â˜…", text: "We went from Notion + spreadsheets + Slack to just TeamHub. The team is happier, goals are clearer, results improved.", name: "Priya M.", role: "CEO Â· GrowthCo", grad: "linear-gradient(135deg,#f59e0b,#ec4899)" },
+  { stars: "★★★★★", text: "TeamHub completely transformed how our engineering org aligns on quarterly goals. We actually ship faster now.", name: "Sarah K.", role: "VP Engineering · Acme Inc", grad: "linear-gradient(135deg,#6366f1,#8b5cf6)" },
+  { stars: "★★★★★", text: "Finally, a tool that doesn't get in the way. The milestone tracking alone saved us hours of status meetings every week.", name: "James R.", role: "Product Lead · StartupXYZ", grad: "linear-gradient(135deg,#06b6d4,#6366f1)" },
+  { stars: "★★★★★", text: "We went from Notion + spreadsheets + Slack to just TeamHub. The team is happier, goals are clearer, results improved.", name: "Priya M.", role: "CEO · GrowthCo", grad: "linear-gradient(135deg,#f59e0b,#ec4899)" },
 ];
 
-/* â”€â”€ Pricing plans â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Pricing plans ─────────────────────────────────────────────────── */
 const plans = [
   {
     name: "Starter", price: "Free", period: "", badge: null,
@@ -49,12 +49,12 @@ const plans = [
   },
 ];
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ══════════════════════════════════════════════════════════════════════ */
 export default function HomePage() {
   return (
     <div style={{ background: "var(--bg)", minHeight: "100vh" }}>
 
-      {/* â”€â”€â”€ Hero â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ─── Hero ──────────────────────────────────────────────────────── */}
       <section className="hero">
         <div className="hero-bg-glow" />
         <div className="hero-grid" />
@@ -64,7 +64,7 @@ export default function HomePage() {
         {/* Eyebrow */}
         <div className="hero-eyebrow fade-up">
           <span className="badge badge-brand">
-            âœ¨ Announcing TeamHub v2.0 â€” Now with AI-powered insights
+            ✨ Announcing TeamHub v2.0 – Now with AI-powered insights
           </span>
         </div>
 
@@ -78,16 +78,16 @@ export default function HomePage() {
         {/* Description */}
         <p className="hero-desc fade-up-2">
           The all-in-one workspace for modern teams. Set goals, track milestones,
-          ship announcements, and celebrate wins â€” all in one beautiful place.
+          ship announcements, and celebrate wins — all in one beautiful place.
         </p>
 
         {/* CTAs */}
         <div className="hero-actions fade-up-3">
           <Link href="/signup" className="btn btn-primary btn-xl">
-            Start for free â†’
+            Start for free →
           </Link>
           <Link href="#how-it-works" className="btn btn-secondary btn-xl">
-            â–¶ See how it works
+            ▶ See how it works
           </Link>
         </div>
 
@@ -106,7 +106,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* â”€â”€â”€ Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ─── Stats ─────────────────────────────────────────────────────── */}
       <div style={{ maxWidth: "var(--max-w)", margin: "0 auto", padding: "0 24px 80px" }}>
         <div className="stats-bar">
           {[
@@ -123,7 +123,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* â”€â”€â”€ Features â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ─── Features ──────────────────────────────────────────────────── */}
       <section id="features" style={{ padding: "0 0 100px" }}>
         <div className="section">
           <div className="section-header">
@@ -151,7 +151,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* â”€â”€â”€ How it works â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ─── How it works ──────────────────────────────────────────────── */}
       <section id="how-it-works" style={{ padding: "0 0 100px", borderTop: "1px solid var(--border)" }}>
         <div className="section">
           <div className="section-header">
@@ -178,7 +178,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* â”€â”€â”€ Testimonials â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ─── Testimonials ──────────────────────────────────────────────── */}
       <section style={{ padding: "0 0 100px", borderTop: "1px solid var(--border)" }}>
         <div className="section">
           <div className="section-header">
@@ -186,7 +186,7 @@ export default function HomePage() {
               <span className="badge badge-amber">Testimonials</span>
             </div>
             <h2 className="section-title">Loved by teams <span className="gt">everywhere</span></h2>
-            <p className="section-desc">Don't take our word for it â€” here's what real teams have to say.</p>
+            <p className="section-desc">Don't take our word for it – here's what real teams have to say.</p>
           </div>
 
           <div className="testi-grid">
@@ -209,7 +209,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* â”€â”€â”€ Pricing â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ─── Pricing ───────────────────────────────────────────────────── */}
       <section id="pricing" style={{ padding: "0 0 100px", borderTop: "1px solid var(--border)" }}>
         <div className="section">
           <div className="section-header">
@@ -265,11 +265,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* â”€â”€â”€ CTA banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ─── CTA banner ────────────────────────────────────────────────── */}
       <div style={{ maxWidth: "var(--max-w)", margin: "0 auto", padding: "0 24px 100px" }}>
         <div className="cta-section">
           <h2>Ready to level up your team?</h2>
-          <p>Join 12,000+ teams that use TeamHub to set goals, track milestones, and ship faster. Free to start â€” no card needed.</p>
+          <p>Join 12,000+ teams that use TeamHub to set goals, track milestones, and ship faster. Free to start — no card needed.</p>
           <div className="cta-btns">
             <Link href="/signup" className="btn btn-primary btn-xl">Create free account</Link>
             <Link href="/login"  className="btn btn-secondary btn-xl">Sign in</Link>
@@ -281,5 +281,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-
