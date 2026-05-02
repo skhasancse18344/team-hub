@@ -578,3 +578,40 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 .spin { animation: spin 0.8s linear infinite; }
+
+/* ─── Responsive ────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .header      { padding: 20px 16px 8px; }
+  .toolbar     { padding: 10px 16px; flex-wrap: wrap; }
+  .kanban      { padding: 14px 16px 24px; }
+  .listView    { padding: 0 16px 24px; overflow-x: auto; }
+  .listHeader,
+  .listRow     { min-width: 580px; }
+  .errorBanner { margin: 0 16px 12px; }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 14px 12px 6px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .header > button {
+    width: 100%;
+    justify-content: center;
+  }
+  .toolbar {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .viewToggle  { flex: 1; }
+  .toggleBtn   { flex: 1; justify-content: center; }
+  .filters     { width: 100%; flex-wrap: wrap; }
+  .filterSelect { flex: 1; min-width: 100px; }
+  .kanban      { padding: 10px 8px 20px; gap: 10px; }
+  .column      { width: 250px; }
+  .listView    { padding: 0 8px 20px; }
+  .errorBanner { margin: 0 8px 12px; }
+}

@@ -29,7 +29,7 @@ function Avatar({ user, size = 32 }) {
   return (
     <div
       className="u-av"
-      style={{ width: size, height: size, fontSize: size * 0.28 + "rem", flexShrink: 0 }}
+      style={{ width: size, height: size, fontSize: size * 0.38 + "px", flexShrink: 0 }}
     >
       {user?.avatarUrl
         ? <img src={user.avatarUrl} alt="" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover" }} />

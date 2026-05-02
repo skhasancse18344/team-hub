@@ -427,6 +427,27 @@ npm run dev
 
 The API starts at `http://localhost:4000` and the web app at `http://localhost:3000`.
 
+### Seed demo data (optional)
+
+After running migrations you can populate the database with realistic demo data:
+
+```bash
+cd apps/api
+npm run db:seed
+```
+
+This creates two workspaces, five users, goals, tasks, announcements, reactions, and notifications so you can explore the app immediately.
+
+#### Demo login credentials (all passwords: `Password123!`)
+
+| Email | Role | Workspace(s) |
+|---|---|---|
+| alice@teamhub.dev | **OWNER** | Product Team, Growth Squad |
+| bob@teamhub.dev | **ADMIN** | Product Team |
+| carol@teamhub.dev | **ADMIN** | Product Team, Growth Squad |
+| dave@teamhub.dev | **MEMBER** | Product Team |
+| eve@teamhub.dev | **MEMBER** | Product Team, Growth Squad |
+
 ### Useful database commands (run from `apps/api`)
 
 ```bash
@@ -434,6 +455,7 @@ npm run db:migrate        # create + apply a new migration
 npm run db:migrate:reset  # reset DB and replay all migrations (dev only)
 npm run db:generate       # regenerate Prisma Client after schema changes
 npm run db:studio         # open Prisma Studio — visual DB browser
+npm run db:seed           # populate demo data
 ```
 
 ---
