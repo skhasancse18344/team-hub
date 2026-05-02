@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Building2, Target, MapPin, Users, Megaphone,
-  User, Settings, LogOut, Rocket, ListTodo,
+  User, Settings, LogOut, Rocket, ListTodo, BarChart2,
 } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useWorkspaceStore } from "../../store/useWorkspaceStore";
@@ -25,6 +25,7 @@ const navItems = [
   { href: "/dashboard/team",          Icon: Users,           label: "Team" },
   { href: "/dashboard/announcements", Icon: Megaphone,       label: "Announcements" },
   { href: "/dashboard/tasks",          Icon: ListTodo,        label: "Tasks" },
+  { href: "/dashboard/analytics",     Icon: BarChart2,       label: "Analytics" },
 ];
 
 const secondaryItems = [

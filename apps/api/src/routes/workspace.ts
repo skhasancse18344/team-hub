@@ -4,6 +4,7 @@ import { requireWorkspaceRole } from "../middleware/requireWorkspaceRole";
 import goalRouter from "./goal";
 import announcementRouter from "./announcement";
 import taskRouter from "./task";
+import analyticsRouter from "./analytics";
 import {
   createWorkspace,
   getMyWorkspaces,
@@ -53,6 +54,9 @@ router.use("/:id/announcements", announcementRouter);
 
 // ── Tasks / Action Items ──────────────────────────────────────────────────────
 router.use("/:id/tasks", taskRouter);
+
+// ── Analytics ─────────────────────────────────────────────────────────────────
+router.use("/:id/analytics", analyticsRouter);
 
 export default router;
 

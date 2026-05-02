@@ -337,3 +337,19 @@ export async function deleteNotificationReq(id) {
 export async function clearAllNotificationsReq() {
   await api.delete("/api/notifications");
 }
+
+// ─── Analytics ────────────────────────────────────────────────────────────────
+
+export async function fetchGoalAnalytics(workspaceId) {
+  const { data } = await api.get(`/api/workspaces/${workspaceId}/analytics/goals`);
+  return data; // { total, completedThisWeek, overdueCount, byStatus, weeklyCompletions }
+}
+
+/** Returns the CSV file as a Blob for browser download */
+export async function exportGoalsCsvReq(workspaceId) {
+  const res = await api.get(
+    `/api/workspaces/${workspaceId}/analytics/goals/export`,
+    { responseType: "blob" }
+  );
+  return res.data;
+}
