@@ -76,6 +76,11 @@ export function emitToWorkspace(workspaceId: string, event: string, data: unknow
   _io.to(`workspace:${workspaceId}`).emit(event, data);
 }
 
+export function emitToUser(userId: string, event: string, data: unknown): void {
+  if (!_io) return;
+  _io.to(`user:${userId}`).emit(event, data);
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 export function initSocket(httpServer: HttpServer): Server {
@@ -117,6 +122,9 @@ export function initSocket(httpServer: HttpServer): Server {
   // ── Connection handler ───────────────────────────────────────────────────────
   io.on("connection", (socket) => {
     const user: OnlineUser = socket.data.user;
+
+    // Each socket automatically joins the user's personal notification room
+    socket.join(`user:${user.id}`);
 
     // ── join_workspace ──────────────────────────────────────────────────────────
     socket.on("join_workspace", async (workspaceId: string) => {

@@ -11,9 +11,11 @@ import { useAuthStore } from "../../store/useAuthStore";
 import { useWorkspaceStore } from "../../store/useWorkspaceStore";
 import { useGoalStore } from "../../store/useGoalStore";
 import { useSocketStore } from "../../store/useSocketStore";
+import { useNotificationStore } from "../../store/useNotificationStore";
 import { useWorkspaceSocket } from "../../lib/useWorkspaceSocket";
 import WorkspaceSwitcher from "../../components/WorkspaceSwitcher";
 import OnlineUsers from "../../components/OnlineUsers";
+import NotificationDropdown from "../../components/NotificationDropdown";
 
 const navItems = [
   { href: "/dashboard",               Icon: LayoutDashboard, label: "Overview" },
@@ -37,6 +39,7 @@ export default function DashboardLayout({ children }) {
   const { workspaces, activeWorkspace, fetchWorkspaces } = useWorkspaceStore();
   const { total: goalTotal } = useGoalStore();
   const { connect, disconnect } = useSocketStore();
+  const { fetchNotifications } = useNotificationStore();
 
   const badgeCounts = {
     workspaces: workspaces.length || null,
@@ -49,6 +52,7 @@ export default function DashboardLayout({ children }) {
     if (initialized && isAuthenticated) {
       fetchWorkspaces();
       connect();
+      fetchNotifications();
     }
   }, [initialized, isAuthenticated]);
 
@@ -151,12 +155,13 @@ export default function DashboardLayout({ children }) {
 
       {/* ── Main content ── */}
       <main className="dash-main">
-        {/* Online users bar — shown when a workspace is active */}
-        {activeWorkspace && (
-          <div style={{ display: "flex", justifyContent: "flex-end", padding: "8px 24px 0" }}>
+        {/* Top bar — online users + notifications */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 10, padding: "10px 24px 0" }}>
+          {activeWorkspace && (
             <OnlineUsers workspaceId={activeWorkspace.id} currentUserId={user?.id} />
-          </div>
-        )}
+          )}
+          <NotificationDropdown />
+        </div>
         {children}
       </main>
     </div>

@@ -5,6 +5,17 @@ import { io } from "socket.io-client";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 const EMPTY_USERS = [];
 
+// Lazy import to avoid circular deps — loaded on first socket connect
+let _notifPush = null;
+function getNotifPush() {
+  if (!_notifPush) {
+    // Dynamic require — safe in client-only context
+    const { useNotificationStore } = require("./useNotificationStore");
+    _notifPush = (n) => useNotificationStore.getState()._socketPush(n);
+  }
+  return _notifPush;
+}
+
 export const useSocketStore = create((set, get) => ({
   socket: null,
   connected: false,
@@ -40,6 +51,10 @@ export const useSocketStore = create((set, get) => ({
       set((s) => ({
         onlineUsers: { ...s.onlineUsers, [workspaceId]: users },
       }));
+    });
+
+    socket.on("notification", (notification) => {
+      getNotifPush()(notification);
     });
 
     set({ socket });

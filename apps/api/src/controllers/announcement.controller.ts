@@ -4,6 +4,7 @@ import { db } from "../lib/db";
 import { AppError } from "../utils/AppError";
 import { ROLE_RANK } from "../middleware/requireWorkspaceRole";
 import { emitToWorkspace } from "../socket";
+import { notifyMentions } from "../utils/notifications";
 
 // ─── Shared include shapes ────────────────────────────────────────────────────
 
@@ -313,6 +314,16 @@ export async function addComment(
     });
 
     emitToWorkspace(workspaceId, "comment_added", { workspaceId, announcementId: annId, comment });
+
+    // Fire mention notifications asynchronously — don't block the response
+    notifyMentions(content, {
+      actorId:     userId,
+      actorName:   comment.user.name,
+      workspaceId,
+      link:        `/dashboard/announcements`,
+      sourceLabel: "an announcement comment",
+    }).catch(() => {/* swallow — non-critical */});
+
     res.status(201).json({ comment });
   } catch (err) { next(err); }
 }

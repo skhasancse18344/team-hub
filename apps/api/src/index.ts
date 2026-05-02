@@ -7,6 +7,7 @@ import healthRouter from "./routes/health";
 import authRouter from "./routes/auth";
 import profileRouter from "./routes/profile";
 import workspaceRouter, { inviteRouter } from "./routes/workspace";
+import notificationRouter from "./routes/notification";
 import { errorHandler } from "./middleware/errorHandler";
 import { initSocket } from "./socket";
 
@@ -25,6 +26,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/profile", profileRouter);
 app.use("/api/workspaces", workspaceRouter);
 app.use("/api/invites", inviteRouter);
+app.use("/api/notifications", notificationRouter);
 app.use(errorHandler);
 
 initSocket(httpServer);

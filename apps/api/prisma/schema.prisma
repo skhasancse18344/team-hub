@@ -111,7 +111,8 @@ model User {
   assignedItems  ActionItem[]      @relation("AssignedUser")
   comments       Comment[]
   reactions      Reaction[]
-  notifications  Notification[]
+  notifications  Notification[]    @relation("NotificationRecipient")
+  sentNotifications Notification[] @relation("NotificationActor")
   announcements  Announcement[]
   refreshTokens  RefreshToken[]
   sentInvites    WorkspaceInvite[] @relation("InvitedBy")
@@ -329,15 +330,18 @@ model Reaction {
 // ─────────────────────────────────────────
 
 model Notification {
-  id        String           @id @default(uuid())
-  type      NotificationType
-  message   String
-  userId    String
-  isRead    Boolean          @default(false)
-  link      String?          // deep-link to the relevant resource
-  createdAt DateTime         @default(now())
+  id          String           @id @default(uuid())
+  type        NotificationType
+  message     String
+  userId      String           // recipient
+  actorId     String?          // who triggered it
+  workspaceId String?          // workspace context
+  isRead      Boolean          @default(false)
+  link        String?          // deep-link to the relevant resource
+  createdAt   DateTime         @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user  User  @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  actor User? @relation("NotificationActor",     fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([userId, isRead])
   @@index([userId, createdAt(sort: Desc)])

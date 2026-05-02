@@ -309,3 +309,31 @@ export async function updateTaskReq(workspaceId, itemId, payload) {
 export async function deleteTaskReq(workspaceId, itemId) {
   await api.delete(`/api/workspaces/${workspaceId}/tasks/${itemId}`);
 }
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+
+export async function fetchNotifications(params = {}) {
+  const { data } = await api.get("/api/notifications", { params });
+  return data; // { notifications, total, unreadCount, page, limit }
+}
+
+export async function fetchUnreadCount() {
+  const { data } = await api.get("/api/notifications/unread-count");
+  return data.count;
+}
+
+export async function markNotificationRead(id) {
+  await api.patch(`/api/notifications/${id}/read`);
+}
+
+export async function markAllNotificationsRead() {
+  await api.patch("/api/notifications/read-all");
+}
+
+export async function deleteNotificationReq(id) {
+  await api.delete(`/api/notifications/${id}`);
+}
+
+export async function clearAllNotificationsReq() {
+  await api.delete("/api/notifications");
+}
