@@ -2,6 +2,8 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
+import healthRouter from "./routes/health";
+import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
 const httpServer = createServer(app);
@@ -16,9 +18,8 @@ const io = new Server(httpServer, {
 app.use(cors({ origin: process.env.CLIENT_URL ?? "http://localhost:3000" }));
 app.use(express.json());
 
-app.get("/health", (_req, res) => {
-  res.json({ status: "ok" });
-});
+app.use("/", healthRouter);
+app.use(errorHandler);
 
 io.on("connection", (socket) => {
   console.log(`Client connected: ${socket.id}`);
