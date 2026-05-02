@@ -264,6 +264,7 @@ model ActionItem {
 
 model Announcement {
   id          String   @id @default(uuid())
+  title       String
   content     String
   isPinned    Boolean  @default(false)
   authorId    String

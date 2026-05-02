@@ -233,3 +233,58 @@ export async function deleteCommentReq(workspaceId, goalId, activityId) {
     `/api/workspaces/${workspaceId}/goals/${goalId}/comments/${activityId}`
   );
 }
+
+// ─── Announcements ────────────────────────────────────────────────────────────
+
+export async function fetchAnnouncements(workspaceId, params = {}) {
+  const { data } = await api.get(`/api/workspaces/${workspaceId}/announcements`, { params });
+  return data; // { announcements, total, page, limit }
+}
+
+export async function createAnnouncementReq(workspaceId, payload) {
+  const { data } = await api.post(`/api/workspaces/${workspaceId}/announcements`, payload);
+  return data.announcement;
+}
+
+export async function updateAnnouncementReq(workspaceId, annId, payload) {
+  const { data } = await api.patch(`/api/workspaces/${workspaceId}/announcements/${annId}`, payload);
+  return data.announcement;
+}
+
+export async function deleteAnnouncementReq(workspaceId, annId) {
+  await api.delete(`/api/workspaces/${workspaceId}/announcements/${annId}`);
+}
+
+export async function pinAnnouncementReq(workspaceId, annId) {
+  const { data } = await api.patch(`/api/workspaces/${workspaceId}/announcements/${annId}/pin`);
+  return data.announcement;
+}
+
+export async function toggleReactionReq(workspaceId, annId, emoji) {
+  const { data } = await api.post(
+    `/api/workspaces/${workspaceId}/announcements/${annId}/reactions`,
+    { emoji }
+  );
+  return data.reactions; // updated reactions array
+}
+
+export async function fetchAnnouncementComments(workspaceId, annId) {
+  const { data } = await api.get(
+    `/api/workspaces/${workspaceId}/announcements/${annId}/comments`
+  );
+  return data.comments;
+}
+
+export async function addAnnouncementCommentReq(workspaceId, annId, content) {
+  const { data } = await api.post(
+    `/api/workspaces/${workspaceId}/announcements/${annId}/comments`,
+    { content }
+  );
+  return data.comment;
+}
+
+export async function deleteAnnouncementCommentReq(workspaceId, annId, commentId) {
+  await api.delete(
+    `/api/workspaces/${workspaceId}/announcements/${annId}/comments/${commentId}`
+  );
+}
