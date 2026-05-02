@@ -1,8 +1,11 @@
+import "dotenv/config";
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import healthRouter from "./routes/health";
+import authRouter from "./routes/auth";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -15,10 +18,15 @@ const io = new Server(httpServer, {
   },
 });
 
-app.use(cors({ origin: process.env.CLIENT_URL ?? "http://localhost:3000" }));
+app.use(cors({
+  origin: process.env.CLIENT_URL ?? "http://localhost:3000",
+  credentials: true, // required for cookies cross-origin
+}));
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/", healthRouter);
+app.use("/api/auth", authRouter);
 app.use(errorHandler);
 
 io.on("connection", (socket) => {

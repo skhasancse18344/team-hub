@@ -1,32 +1,107 @@
-# Turborepo starter
+# Team Hub
 
-This Turborepo starter is maintained by the Turborepo core team.
+A collaborative team management platform built as a Turborepo monorepo.
 
-## Using this example
+## Stack
 
-Run the following command:
+| Layer | Technology |
+|---|---|
+| Monorepo | Turborepo + npm workspaces |
+| Frontend | Next.js 14 (App Router, JS) |
+| Backend | Node.js + Express + TypeScript |
+| Database | PostgreSQL + Prisma 7 |
+| Auth | JWT (httpOnly cookies) + bcrypt |
+| Real-time | Socket.io |
 
-```sh
-npx create-turbo@latest
+## Repository Structure
+
+```
+team-hub/
+├── apps/
+│   ├── web/          # Next.js 14 frontend  → http://localhost:3000
+│   └── api/          # Express REST API     → http://localhost:4000
+└── packages/
+    ├── eslint-config/       # Shared ESLint rules
+    ├── typescript-config/   # Shared tsconfig bases
+    └── ui/                  # Shared React components
 ```
 
-## What's inside?
+## Getting Started
 
-This Turborepo includes the following packages/apps:
+### Prerequisites
 
-### Apps and Packages
+- Node.js >= 18
+- PostgreSQL running locally
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Setup
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+```bash
+# 1. Clone and install
+git clone https://github.com/skhasancse18344/team-hub.git
+cd team-hub
+npm install
 
-### Utilities
+# 2. Configure environment variables
+cp .env.example apps/api/.env
+cp .env.example apps/web/.env.local
+# Then edit each file with your real values
 
-This Turborepo has some additional tools already setup for you:
+# 3. Run database migrations
+cd apps/api
+npm run db:migrate
+
+# 4. Start all apps in parallel (from root)
+cd ../..
+npm run dev
+```
+
+## Environment Variables
+
+See [`.env.example`](.env.example) for all required variables.
+
+| Variable | App | Description |
+|---|---|---|
+| `DATABASE_URL` | api | PostgreSQL connection string |
+| `JWT_ACCESS_SECRET` | api | Secret for signing access tokens |
+| `JWT_REFRESH_SECRET` | api | Secret for signing refresh tokens |
+| `PORT` | api | API server port (default `4000`) |
+| `CLIENT_URL` | api | Allowed CORS origin |
+| `NODE_ENV` | api | `development` or `production` |
+| `NEXT_PUBLIC_API_URL` | web | API base URL for browser requests |
+| `NEXT_PUBLIC_WS_URL` | web | WebSocket server URL |
+
+## Scripts
+
+Run from the **root** of the monorepo:
+
+```bash
+npm run dev            # Start all apps in parallel
+npm run build          # Build all apps (respects dependency order)
+npm run lint           # Lint all packages
+npm run check-types    # TypeScript check all packages
+npm run format         # Prettier format everything
+npm run format:check   # Prettier check (CI)
+npm run clean          # Delete all build outputs
+```
+
+Run from **`apps/api`**:
+
+```bash
+npm run db:migrate          # Create + apply a new migration (dev)
+npm run db:migrate:deploy   # Apply pending migrations (production)
+npm run db:migrate:reset    # Reset DB and re-apply all migrations (dev only)
+npm run db:generate         # Regenerate Prisma Client after schema changes
+npm run db:studio           # Open Prisma Studio (visual DB browser)
+npm run db:push             # Sync schema without a migration file (prototyping)
+```
+
+## API Reference
+
+See [`apps/api/README.md`](apps/api/README.md) for full endpoint documentation.
+
+## License
+
+ISC
 
 - [TypeScript](https://www.typescriptlang.org/) for static type checking
 - [ESLint](https://eslint.org/) for code linting

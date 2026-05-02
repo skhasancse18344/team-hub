@@ -86,10 +86,28 @@ model User {
   assignedItems ActionItem[]   @relation("AssignedUser")
   comments      Comment[]
   reactions     Reaction[]
-  notifications Notification[]
-  announcements Announcement[]
+  notifications  Notification[]
+  announcements  Announcement[]
+  refreshTokens  RefreshToken[]
 
   @@map("users")
+}
+
+// ─────────────────────────────────────────
+// REFRESH TOKEN
+// ─────────────────────────────────────────
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique  // store bcrypt hash, never raw token
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
 }
 
 // ─────────────────────────────────────────
