@@ -27,7 +27,12 @@ export const useTaskStore = create((set, get) => ({
     set({ saving: true, error: null });
     try {
       const item = await createTaskReq(workspaceId, payload);
-      set((s) => ({ items: [item, ...s.items], total: s.total + 1 }));
+      // Guard: socket may have already added this item before the HTTP response arrived
+      set((s) =>
+        s.items.some((i) => i.id === item.id)
+          ? {}
+          : { items: [item, ...s.items], total: s.total + 1 }
+      );
       return item;
     } catch (err) {
       set({ error: err?.response?.data?.error ?? err.message });
@@ -85,5 +90,30 @@ export const useTaskStore = create((set, get) => ({
       set({ error: err?.response?.data?.error ?? err.message });
       throw err;
     }
+  },
+
+  // ── Socket mutation helpers (called by useWorkspaceSocket) ─────────────────
+
+  /** Task created by another user */
+  _socketAdd: (item) => {
+    set((s) => {
+      if (s.items.some((i) => i.id === item.id)) return {};
+      return { items: [item, ...s.items], total: s.total + 1 };
+    });
+  },
+
+  /** Task updated by another user */
+  _socketUpdate: (item) => {
+    set((s) => ({
+      items: s.items.map((i) => (i.id === item.id ? item : i)),
+    }));
+  },
+
+  /** Task deleted by another user */
+  _socketDelete: (itemId) => {
+    set((s) => ({
+      items: s.items.filter((i) => i.id !== itemId),
+      total: Math.max(0, s.total - 1),
+    }));
   },
 }));

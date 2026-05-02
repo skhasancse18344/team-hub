@@ -3,6 +3,7 @@ import { Announcement } from "../../generated/prisma/client";
 import { db } from "../lib/db";
 import { AppError } from "../utils/AppError";
 import { ROLE_RANK } from "../middleware/requireWorkspaceRole";
+import { emitToWorkspace } from "../socket";
 
 // ─── Shared include shapes ────────────────────────────────────────────────────
 
@@ -105,6 +106,7 @@ export async function createAnnouncement(
       include: ANN_LIST_INCLUDE,
     });
 
+    emitToWorkspace(workspaceId, "new_announcement", { workspaceId, announcement });
     res.status(201).json({ announcement });
   } catch (err) { next(err); }
 }
@@ -174,6 +176,7 @@ export async function updateAnnouncement(
       include: ANN_LIST_INCLUDE,
     });
 
+    emitToWorkspace(workspaceId, "announcement_updated", { workspaceId, announcement: updated });
     res.json({ announcement: updated });
   } catch (err) { next(err); }
 }
@@ -195,6 +198,7 @@ export async function deleteAnnouncement(
     }
 
     await db.announcement.delete({ where: { id: annId } });
+    emitToWorkspace(workspaceId, "announcement_deleted", { workspaceId, announcementId: annId });
     res.json({ message: "Announcement deleted" });
   } catch (err) { next(err); }
 }
@@ -216,6 +220,7 @@ export async function pinAnnouncement(
       include: ANN_LIST_INCLUDE,
     });
 
+    emitToWorkspace(workspaceId, "announcement_pinned", { workspaceId, announcement: updated });
     res.json({ announcement: updated });
   } catch (err) { next(err); }
 }
@@ -255,6 +260,7 @@ export async function toggleReaction(
       select: { id: true, emoji: true, userId: true },
     });
 
+    emitToWorkspace(workspaceId, "reaction_updated", { workspaceId, announcementId: annId, reactions });
     res.json({ reactions, removed: !!existing });
   } catch (err) { next(err); }
 }
@@ -306,6 +312,7 @@ export async function addComment(
       include: { user: { select: AUTHOR_SELECT } },
     });
 
+    emitToWorkspace(workspaceId, "comment_added", { workspaceId, announcementId: annId, comment });
     res.status(201).json({ comment });
   } catch (err) { next(err); }
 }
@@ -334,6 +341,7 @@ export async function deleteComment(
     }
 
     await db.comment.delete({ where: { id: commentId } });
+    emitToWorkspace(workspaceId, "comment_deleted", { workspaceId, announcementId: annId, commentId });
     res.json({ message: "Comment deleted" });
   } catch (err) { next(err); }
 }

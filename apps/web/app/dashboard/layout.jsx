@@ -10,7 +10,10 @@ import {
 import { useAuthStore } from "../../store/useAuthStore";
 import { useWorkspaceStore } from "../../store/useWorkspaceStore";
 import { useGoalStore } from "../../store/useGoalStore";
+import { useSocketStore } from "../../store/useSocketStore";
+import { useWorkspaceSocket } from "../../lib/useWorkspaceSocket";
 import WorkspaceSwitcher from "../../components/WorkspaceSwitcher";
+import OnlineUsers from "../../components/OnlineUsers";
 
 const navItems = [
   { href: "/dashboard",               Icon: LayoutDashboard, label: "Overview" },
@@ -31,8 +34,9 @@ export default function DashboardLayout({ children }) {
   const pathname  = usePathname();
   const router    = useRouter();
   const { user, isAuthenticated, initialized, initialize, logout } = useAuthStore();
-  const { workspaces, fetchWorkspaces } = useWorkspaceStore();
+  const { workspaces, activeWorkspace, fetchWorkspaces } = useWorkspaceStore();
   const { total: goalTotal } = useGoalStore();
+  const { connect, disconnect } = useSocketStore();
 
   const badgeCounts = {
     workspaces: workspaces.length || null,
@@ -42,12 +46,22 @@ export default function DashboardLayout({ children }) {
   useEffect(() => { initialize(); }, [initialize]);
 
   useEffect(() => {
-    if (initialized && isAuthenticated) fetchWorkspaces();
+    if (initialized && isAuthenticated) {
+      fetchWorkspaces();
+      connect();
+    }
   }, [initialized, isAuthenticated]);
 
+  // Disconnect socket on logout
   useEffect(() => {
-    if (initialized && !isAuthenticated) router.replace("/login");
+    if (initialized && !isAuthenticated) {
+      disconnect();
+      router.replace("/login");
+    }
   }, [initialized, isAuthenticated, router]);
+
+  // Join / leave the active workspace room
+  useWorkspaceSocket(activeWorkspace?.id ?? null);
 
   if (!initialized) {
     return (
@@ -137,6 +151,12 @@ export default function DashboardLayout({ children }) {
 
       {/* ── Main content ── */}
       <main className="dash-main">
+        {/* Online users bar — shown when a workspace is active */}
+        {activeWorkspace && (
+          <div style={{ display: "flex", justifyContent: "flex-end", padding: "8px 24px 0" }}>
+            <OnlineUsers workspaceId={activeWorkspace.id} currentUserId={user?.id} />
+          </div>
+        )}
         {children}
       </main>
     </div>

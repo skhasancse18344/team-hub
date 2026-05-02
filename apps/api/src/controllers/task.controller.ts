@@ -3,6 +3,7 @@ import { ActionStatus, Priority } from "../../generated/prisma/client";
 import { db } from "../lib/db";
 import { AppError } from "../utils/AppError";
 import { ROLE_RANK } from "../middleware/requireWorkspaceRole";
+import { emitToWorkspace } from "../socket";
 
 // ─── Includes ─────────────────────────────────────────────────────────────────
 
@@ -116,6 +117,7 @@ export async function createTask(
       include: ITEM_INCLUDE,
     });
 
+    emitToWorkspace(workspaceId, "task_created", { workspaceId, item });
     res.status(201).json({ item });
   } catch (err) { next(err); }
 }
@@ -186,6 +188,7 @@ export async function updateTask(
       include: ITEM_INCLUDE,
     });
 
+    emitToWorkspace(workspaceId, "task_updated", { workspaceId, item });
     res.json({ item });
   } catch (err) { next(err); }
 }
@@ -211,6 +214,7 @@ export async function deleteTask(
     }
 
     await db.actionItem.delete({ where: { id: itemId } });
+    emitToWorkspace(workspaceId, "task_deleted", { workspaceId, itemId });
     res.json({ message: "Task deleted" });
   } catch (err) { next(err); }
 }

@@ -40,7 +40,12 @@ export const useAnnouncementStore = create((set, get) => ({
     set({ saving: true, error: null });
     try {
       const ann = await createAnnouncementReq(workspaceId, payload);
-      set((s) => ({ announcements: [ann, ...s.announcements], total: s.total + 1 }));
+      // Guard: socket may have already added this item before the HTTP response arrived
+      set((s) =>
+        s.announcements.some((a) => a.id === ann.id)
+          ? {}
+          : { announcements: [ann, ...s.announcements], total: s.total + 1 }
+      );
       return ann;
     } catch (err) {
       set({ error: err?.response?.data?.error ?? err.message });
@@ -137,18 +142,23 @@ export const useAnnouncementStore = create((set, get) => ({
     set({ saving: true });
     try {
       const comment = await addAnnouncementCommentReq(workspaceId, annId, content);
-      set((s) => ({
-        comments: {
-          ...s.comments,
-          [annId]: [...(s.comments[annId] ?? []), comment],
-        },
-        // Update comment count on the announcement
-        announcements: s.announcements.map((a) =>
-          a.id === annId
-            ? { ...a, _count: { ...a._count, comments: (a._count?.comments ?? 0) + 1 } }
-            : a
-        ),
-      }));
+      // Guard: socket may have already added this comment before HTTP response
+      set((s) => {
+        const existing = s.comments[annId] ?? [];
+        if (existing.some((c) => c.id === comment.id)) return {};
+        return {
+          comments: {
+            ...s.comments,
+            [annId]: [...existing, comment],
+          },
+          // Update comment count on the announcement
+          announcements: s.announcements.map((a) =>
+            a.id === annId
+              ? { ...a, _count: { ...a._count, comments: (a._count?.comments ?? 0) + 1 } }
+              : a
+          ),
+        };
+      });
       return comment;
     } catch (err) {
       set({ error: err?.response?.data?.error ?? err.message });
@@ -176,5 +186,83 @@ export const useAnnouncementStore = create((set, get) => ({
       set({ error: err?.response?.data?.error ?? err.message });
       throw err;
     }
+  },
+
+  // ── Socket mutation helpers (called by useWorkspaceSocket) ─────────────────
+
+  /** New announcement arrived — prepend if not already present */
+  _socketAdd: (announcement) => {
+    set((s) => {
+      if (s.announcements.some((a) => a.id === announcement.id)) return {};
+      const list = [announcement, ...s.announcements].sort((a, b) => {
+        if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      });
+      return { announcements: list, total: s.total + 1 };
+    });
+  },
+
+  /** Announcement was edited or pinned */
+  _socketUpdate: (announcement) => {
+    set((s) => {
+      const list = s.announcements
+        .map((a) => (a.id === announcement.id ? announcement : a))
+        .sort((a, b) => {
+          if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+      return { announcements: list };
+    });
+  },
+
+  /** Announcement was deleted */
+  _socketDelete: (announcementId) => {
+    set((s) => ({
+      announcements: s.announcements.filter((a) => a.id !== announcementId),
+      total: Math.max(0, s.total - 1),
+    }));
+  },
+
+  /** Comment added by another user */
+  _socketAddComment: (announcementId, comment) => {
+    set((s) => {
+      const existing = s.comments[announcementId];
+      // Only update if we already have the comment list loaded for this announcement
+      if (!existing) return {};
+      if (existing.some((c) => c.id === comment.id)) return {};
+      return {
+        comments: { ...s.comments, [announcementId]: [...existing, comment] },
+        announcements: s.announcements.map((a) =>
+          a.id === announcementId
+            ? { ...a, _count: { ...a._count, comments: (a._count?.comments ?? 0) + 1 } }
+            : a
+        ),
+      };
+    });
+  },
+
+  /** Comment deleted by another user */
+  _socketDeleteComment: (announcementId, commentId) => {
+    set((s) => {
+      const existing = s.comments[announcementId];
+      if (!existing) return {};
+      return {
+        comments: { ...s.comments, [announcementId]: existing.filter((c) => c.id !== commentId) },
+        announcements: s.announcements.map((a) =>
+          a.id === announcementId
+            ? { ...a, _count: { ...a._count, comments: Math.max(0, (a._count?.comments ?? 1) - 1) } }
+            : a
+        ),
+      };
+    });
+  },
+
+  /** Reactions changed on an announcement */
+  _socketReaction: (announcementId, reactions) => {
+    set((s) => ({
+      announcements: s.announcements.map((a) =>
+        a.id === announcementId ? { ...a, reactions } : a
+      ),
+    }));
   },
 }));
