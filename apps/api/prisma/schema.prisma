@@ -77,6 +77,22 @@ enum NotificationType {
   @@map("notification_type")
 }
 
+enum GoalActivityType {
+  CREATED
+  UPDATED
+  STATUS_CHANGED
+  PRIORITY_CHANGED
+  PROGRESS_UPDATED
+  MILESTONE_ADDED
+  MILESTONE_UPDATED
+  MILESTONE_COMPLETED
+  MILESTONE_DELETED
+  COMMENT_ADDED
+  COMMENT_DELETED
+
+  @@map("goal_activity_type")
+}
+
 // ─────────────────────────────────────────
 // USER
 // ─────────────────────────────────────────
@@ -90,15 +106,16 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  memberships   Membership[]
-  ownedGoals    Goal[]         @relation("GoalOwner")
-  assignedItems ActionItem[]   @relation("AssignedUser")
-  comments      Comment[]
-  reactions     Reaction[]
+  memberships    Membership[]
+  ownedGoals     Goal[]            @relation("GoalOwner")
+  assignedItems  ActionItem[]      @relation("AssignedUser")
+  comments       Comment[]
+  reactions      Reaction[]
   notifications  Notification[]
   announcements  Announcement[]
   refreshTokens  RefreshToken[]
   sentInvites    WorkspaceInvite[] @relation("InvitedBy")
+  goalActivities GoalActivity[]    @relation("ActivityUser")
 
   @@map("users")
 }
@@ -171,17 +188,19 @@ model Goal {
   description String?
   status      GoalStatus @default(NOT_STARTED)
   priority    Priority   @default(MEDIUM)
+  progress    Int        @default(0) // 0-100, auto-calculated from milestones
   dueDate     DateTime?
   ownerId     String
   workspaceId String
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
-  owner       User      @relation("GoalOwner", fields: [ownerId], references: [id])
-  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  owner       User           @relation("GoalOwner", fields: [ownerId], references: [id])
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   milestones  Milestone[]
   actionItems ActionItem[]
   comments    Comment[]
+  activities  GoalActivity[]
 
   @@index([workspaceId])
   @@index([ownerId])
@@ -194,14 +213,16 @@ model Goal {
 // ─────────────────────────────────────────
 
 model Milestone {
-  id        String          @id @default(uuid())
-  title     String
-  status    MilestoneStatus @default(PENDING)
-  progress  Int             @default(0) // 0–100
-  dueDate   DateTime?
-  goalId    String
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  id          String          @id @default(uuid())
+  title       String
+  description String?
+  status      MilestoneStatus @default(PENDING)
+  progress    Int             @default(0) // 0-100
+  order       Int             @default(0)
+  dueDate     DateTime?
+  goalId      String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 
   goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
 
@@ -320,6 +341,27 @@ model Notification {
   @@index([userId, isRead])
   @@index([userId, createdAt(sort: Desc)])
   @@map("notifications")
+}
+
+// ─────────────────────────────────────────
+// GOAL ACTIVITY
+// ─────────────────────────────────────────
+
+model GoalActivity {
+  id        String           @id @default(uuid())
+  goalId    String
+  userId    String
+  type      GoalActivityType
+  content   String?          // used for COMMENT_ADDED, UPDATED descriptions
+  meta      Json?            // e.g. { from: "NOT_STARTED", to: "IN_PROGRESS" }
+  createdAt DateTime         @default(now())
+
+  goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  user User @relation("ActivityUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([goalId, createdAt(sort: Desc)])
+  @@index([userId])
+  @@map("goal_activities")
 }
 
 // ─────────────────────────────────────────

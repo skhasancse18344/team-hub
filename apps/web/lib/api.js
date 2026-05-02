@@ -159,3 +159,77 @@ export async function acceptInviteReq(token) {
   const { data } = await api.post(`/api/invites/${token}/accept`);
   return data.membership;
 }
+
+// ─── Goals ────────────────────────────────────────────────────────────────────
+
+export async function fetchGoals(workspaceId, params = {}) {
+  const { data } = await api.get(`/api/workspaces/${workspaceId}/goals`, { params });
+  return data; // { goals, total, page, limit }
+}
+
+export async function createGoalReq(workspaceId, payload) {
+  const { data } = await api.post(`/api/workspaces/${workspaceId}/goals`, payload);
+  return data.goal;
+}
+
+export async function fetchGoal(workspaceId, goalId) {
+  const { data } = await api.get(`/api/workspaces/${workspaceId}/goals/${goalId}`);
+  return data.goal;
+}
+
+export async function updateGoalReq(workspaceId, goalId, payload) {
+  const { data } = await api.patch(`/api/workspaces/${workspaceId}/goals/${goalId}`, payload);
+  return data.goal;
+}
+
+export async function deleteGoalReq(workspaceId, goalId) {
+  await api.delete(`/api/workspaces/${workspaceId}/goals/${goalId}`);
+}
+
+// ─── Milestones ───────────────────────────────────────────────────────────────
+
+export async function createMilestoneReq(workspaceId, goalId, payload) {
+  const { data } = await api.post(
+    `/api/workspaces/${workspaceId}/goals/${goalId}/milestones`,
+    payload
+  );
+  return data.milestone;
+}
+
+export async function updateMilestoneReq(workspaceId, goalId, milestoneId, payload) {
+  const { data } = await api.patch(
+    `/api/workspaces/${workspaceId}/goals/${goalId}/milestones/${milestoneId}`,
+    payload
+  );
+  return { milestone: data.milestone, goalProgress: data.goalProgress };
+}
+
+export async function deleteMilestoneReq(workspaceId, goalId, milestoneId) {
+  await api.delete(
+    `/api/workspaces/${workspaceId}/goals/${goalId}/milestones/${milestoneId}`
+  );
+}
+
+// ─── Goal activity + comments ─────────────────────────────────────────────────
+
+export async function fetchGoalActivity(workspaceId, goalId, params = {}) {
+  const { data } = await api.get(
+    `/api/workspaces/${workspaceId}/goals/${goalId}/activity`,
+    { params }
+  );
+  return data; // { activities, nextCursor }
+}
+
+export async function addCommentReq(workspaceId, goalId, content) {
+  const { data } = await api.post(
+    `/api/workspaces/${workspaceId}/goals/${goalId}/comments`,
+    { content }
+  );
+  return data.activity;
+}
+
+export async function deleteCommentReq(workspaceId, goalId, activityId) {
+  await api.delete(
+    `/api/workspaces/${workspaceId}/goals/${goalId}/comments/${activityId}`
+  );
+}

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middleware/authenticate";
 import { requireWorkspaceRole } from "../middleware/requireWorkspaceRole";
+import goalRouter from "./goal";
 import {
   createWorkspace,
   getMyWorkspaces,
@@ -41,6 +42,9 @@ router.delete( "/:id/leave",               requireWorkspaceRole("MEMBER"), leave
 router.get(    "/:id/invites",              requireWorkspaceRole("ADMIN"),  getInvites);
 router.post(   "/:id/invites",              requireWorkspaceRole("ADMIN"),  inviteMember);
 router.delete( "/:id/invites/:inviteId",    requireWorkspaceRole("ADMIN"),  revokeInvite);
+
+// ── Goals (nested router, inherits authenticate) ──────────────────────────────
+router.use("/:id/goals", goalRouter);
 
 export default router;
 

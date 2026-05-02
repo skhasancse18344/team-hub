@@ -15,7 +15,7 @@ const navItems = [
   { href: "/dashboard",               Icon: LayoutDashboard, label: "Overview" },
   { href: "/dashboard/workspaces",    Icon: Building2,       label: "Workspaces",    badge: "3" },
   { href: "/dashboard/goals",         Icon: Target,          label: "Goals",          badge: "12" },
-  { href: "/dashboard/milestones",    Icon: MapPin,          label: "Milestones" },
+//   { href: "/dashboard/milestones",    Icon: MapPin,          label: "Milestones" },
   { href: "/dashboard/team",          Icon: Users,           label: "Team" },
   { href: "/dashboard/announcements", Icon: Megaphone,       label: "Announcements" },
 ];
@@ -64,10 +64,10 @@ export default function DashboardLayout({ children }) {
     <div className="dash-layout">
       {/* ── Sidebar ── */}
       <aside className="sidebar">
-        <div className="sidebar-logo">
+        <Link className="sidebar-logo" href="/">
           <div className="sidebar-logo-icon"><Rocket size={16} /></div>
           <span>TeamHub</span>
-        </div>
+        </Link>
 
         <div style={{ padding: "0 12px 12px" }}>
           <WorkspaceSwitcher />
