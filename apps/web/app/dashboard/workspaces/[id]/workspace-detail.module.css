@@ -1,0 +1,338 @@
+.page {
+  padding: 32px;
+  max-width: 860px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 0.875rem;
+  padding: 4px 0;
+}
+
+.backBtn:hover { color: var(--accent); }
+
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.wsIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pageTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 4px;
+}
+
+.pageDesc {
+  font-size: 0.9rem;
+  color: var(--text-2);
+  margin: 0;
+}
+
+.inviteTopBtn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.errorBanner {
+  padding: 10px 16px;
+  background: color-mix(in srgb, #e74c3c 12%, transparent);
+  border: 1px solid #e74c3c;
+  border-radius: 8px;
+  color: #e74c3c;
+  font-size: 0.875rem;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-2);
+  font-size: 0.875rem;
+  cursor: pointer;
+  margin-bottom: -1px;
+  border-radius: 8px 8px 0 0;
+  transition: color 0.15s;
+}
+
+.tab:hover { color: var(--text); }
+
+.tabActive {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* Sections */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+.hint {
+  font-size: 0.875rem;
+  color: var(--text-2);
+  margin: 0;
+}
+
+/* Form */
+.form {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.875rem;
+  color: var(--text-2);
+}
+
+.required { color: var(--danger, #e74c3c); }
+
+.input {
+  padding: 9px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.9rem;
+  outline: none;
+  font-family: inherit;
+}
+
+.input:focus { border-color: var(--accent); }
+.input:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.textarea { resize: vertical; }
+
+.colorRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.colorPicker {
+  width: 40px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  background: none;
+  padding: 2px;
+}
+
+.colorHex {
+  font-size: 0.85rem;
+  color: var(--text-2);
+  font-family: monospace;
+}
+
+.formError   { font-size: 0.8rem; color: var(--danger, #e74c3c); margin: 0; }
+.formSuccess { font-size: 0.8rem; color: var(--success, #2ecc71); margin: 0; }
+
+.formActions { display: flex; gap: 10px; }
+
+/* Danger zone */
+.dangerZone {
+  border: 1px solid color-mix(in srgb, #e74c3c 40%, transparent);
+  border-radius: 12px;
+  padding: 20px;
+  background: color-mix(in srgb, #e74c3c 5%, transparent);
+}
+
+.dangerTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e74c3c;
+  margin: 0 0 14px;
+}
+
+.dangerActions { display: flex; flex-direction: column; gap: 12px; }
+
+.dangerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dangerLabel { font-size: 0.9rem; color: var(--text); font-weight: 500; }
+.dangerHint  { font-size: 0.8rem; color: var(--text-2); margin-top: 2px; }
+
+.dangerBtn {
+  background: color-mix(in srgb, #e74c3c 15%, transparent);
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.dangerBtn:hover {
+  background: color-mix(in srgb, #e74c3c 25%, transparent);
+}
+
+.confirmRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.confirmText { font-size: 0.85rem; color: #e74c3c; }
+
+/* Table */
+.table {
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tableHead {
+  display: grid;
+  grid-template-columns: 1fr 120px 60px;
+  padding: 10px 16px;
+  background: var(--bg);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 1fr 120px 60px;
+  padding: 12px 16px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.tableRow:last-child { border-bottom: none; }
+
+.memberInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.memberName { font-size: 0.875rem; color: var(--text); }
+.memberEmail { font-size: 0.75rem; color: var(--text-2); }
+
+.you {
+  font-size: 0.72rem;
+  color: var(--text-2);
+  font-weight: 400;
+}
+
+.roleSelect {
+  padding: 4px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 0.8rem;
+  cursor: pointer;
+  outline: none;
+}
+
+.roleBadge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+}
+
+.memberActions { display: flex; justify-content: flex-end; }
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: var(--text-2);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+}
+
+.removeBtn:hover {
+  color: var(--danger, #e74c3c);
+  background: color-mix(in srgb, var(--danger, #e74c3c) 12%, transparent);
+}
+
+/* Center utility */
+.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 300px;
+  color: var(--text-2);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spin { animation: spin 0.8s linear infinite; }

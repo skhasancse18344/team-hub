@@ -22,6 +22,15 @@ enum Role {
   @@map("role")
 }
 
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+  EXPIRED
+
+  @@map("invite_status")
+}
+
 enum GoalStatus {
   NOT_STARTED
   IN_PROGRESS
@@ -89,6 +98,7 @@ model User {
   notifications  Notification[]
   announcements  Announcement[]
   refreshTokens  RefreshToken[]
+  sentInvites    WorkspaceInvite[] @relation("InvitedBy")
 
   @@map("users")
 }
@@ -127,6 +137,7 @@ model Workspace {
   goals         Goal[]
   announcements Announcement[]
   actionItems   ActionItem[]
+  invites       WorkspaceInvite[]
 
   @@map("workspaces")
 }
@@ -309,5 +320,30 @@ model Notification {
   @@index([userId, isRead])
   @@index([userId, createdAt(sort: Desc)])
   @@map("notifications")
+}
+
+// ─────────────────────────────────────────
+// WORKSPACE INVITE
+// ─────────────────────────────────────────
+
+model WorkspaceInvite {
+  id          String       @id @default(uuid())
+  token       String       @unique @default(uuid())
+  email       String
+  role        Role         @default(MEMBER)
+  workspaceId String
+  invitedById String
+  status      InviteStatus @default(PENDING)
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  createdAt   DateTime     @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  invitedBy User      @relation("InvitedBy", fields: [invitedById], references: [id])
+
+  @@index([workspaceId])
+  @@index([email])
+  @@index([token])
+  @@map("workspace_invites")
 }
 

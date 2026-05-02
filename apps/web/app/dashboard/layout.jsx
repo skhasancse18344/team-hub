@@ -8,6 +8,8 @@ import {
   User, Settings, LogOut, Rocket,
 } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
+import { useWorkspaceStore } from "../../store/useWorkspaceStore";
+import WorkspaceSwitcher from "../../components/WorkspaceSwitcher";
 
 const navItems = [
   { href: "/dashboard",               Icon: LayoutDashboard, label: "Overview" },
@@ -27,8 +29,13 @@ export default function DashboardLayout({ children }) {
   const pathname  = usePathname();
   const router    = useRouter();
   const { user, isAuthenticated, initialized, initialize, logout } = useAuthStore();
+  const fetchWorkspaces = useWorkspaceStore((s) => s.fetchWorkspaces);
 
   useEffect(() => { initialize(); }, [initialize]);
+
+  useEffect(() => {
+    if (initialized && isAuthenticated) fetchWorkspaces();
+  }, [initialized, isAuthenticated]);
 
   useEffect(() => {
     if (initialized && !isAuthenticated) router.replace("/login");
@@ -60,6 +67,10 @@ export default function DashboardLayout({ children }) {
         <div className="sidebar-logo">
           <div className="sidebar-logo-icon"><Rocket size={16} /></div>
           <span>TeamHub</span>
+        </div>
+
+        <div style={{ padding: "0 12px 12px" }}>
+          <WorkspaceSwitcher />
         </div>
 
         <div className="sidebar-section">

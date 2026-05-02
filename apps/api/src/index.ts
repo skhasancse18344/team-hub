@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser";
 import healthRouter from "./routes/health";
 import authRouter from "./routes/auth";
 import profileRouter from "./routes/profile";
+import workspaceRouter, { inviteRouter } from "./routes/workspace";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -29,6 +30,8 @@ app.use(cookieParser());
 app.use("/", healthRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/profile", profileRouter);
+app.use("/api/workspaces", workspaceRouter);
+app.use("/api/invites", inviteRouter);
 app.use(errorHandler);
 
 io.on("connection", (socket) => {

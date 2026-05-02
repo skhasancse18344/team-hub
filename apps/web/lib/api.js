@@ -87,3 +87,75 @@ export async function removeAvatar() {
   const { data } = await api.delete("/api/profile/avatar");
   return data.user;
 }
+
+// ─── Workspaces ───────────────────────────────────────────────────────────────
+
+export async function fetchWorkspaces() {
+  const { data } = await api.get("/api/workspaces");
+  return data.workspaces;
+}
+
+export async function createWorkspaceReq(payload) {
+  const { data } = await api.post("/api/workspaces", payload);
+  return data.workspace;
+}
+
+export async function fetchWorkspace(id) {
+  const { data } = await api.get(`/api/workspaces/${id}`);
+  return data.workspace;
+}
+
+export async function updateWorkspaceReq(id, payload) {
+  const { data } = await api.patch(`/api/workspaces/${id}`, payload);
+  return data.workspace;
+}
+
+export async function deleteWorkspaceReq(id) {
+  await api.delete(`/api/workspaces/${id}`);
+}
+
+// ─── Members ──────────────────────────────────────────────────────────────────
+
+export async function fetchMembers(workspaceId) {
+  const { data } = await api.get(`/api/workspaces/${workspaceId}/members`);
+  return data.members;
+}
+
+export async function updateMemberRoleReq(workspaceId, memberId, role) {
+  const { data } = await api.patch(`/api/workspaces/${workspaceId}/members/${memberId}`, { role });
+  return data.membership;
+}
+
+export async function removeMemberReq(workspaceId, memberId) {
+  await api.delete(`/api/workspaces/${workspaceId}/members/${memberId}`);
+}
+
+export async function leaveWorkspaceReq(workspaceId) {
+  await api.delete(`/api/workspaces/${workspaceId}/leave`);
+}
+
+// ─── Invites ──────────────────────────────────────────────────────────────────
+
+export async function fetchInvites(workspaceId) {
+  const { data } = await api.get(`/api/workspaces/${workspaceId}/invites`);
+  return data.invites;
+}
+
+export async function inviteMemberReq(workspaceId, payload) {
+  const { data } = await api.post(`/api/workspaces/${workspaceId}/invites`, payload);
+  return data.invite;
+}
+
+export async function revokeInviteReq(workspaceId, inviteId) {
+  await api.delete(`/api/workspaces/${workspaceId}/invites/${inviteId}`);
+}
+
+export async function fetchMyInvites() {
+  const { data } = await api.get("/api/invites/pending");
+  return data.invites;
+}
+
+export async function acceptInviteReq(token) {
+  const { data } = await api.post(`/api/invites/${token}/accept`);
+  return data.membership;
+}
