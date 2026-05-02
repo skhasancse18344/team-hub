@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useSocketStore } from "../store/useSocketStore";
 import { useAnnouncementStore } from "../store/useAnnouncementStore";
 import { useTaskStore } from "../store/useTaskStore";
+import { useGoalStore } from "../store/useGoalStore";
 
 /**
  * Hook — call inside a component that knows the active workspaceId.
@@ -21,9 +22,14 @@ export function useWorkspaceSocket(workspaceId) {
   const deleteComment   = useAnnouncementStore((s) => s._socketDeleteComment);
 
   // ── Task handlers ────────────────────────────────────────────────────────────
-  const addTask    = useTaskStore((s) => s._socketAdd);
+  const addTask     = useTaskStore((s) => s._socketAdd);
   const replaceTask = useTaskStore((s) => s._socketUpdate);
   const removeTask  = useTaskStore((s) => s._socketDelete);
+
+  // ── Goal handlers ─────────────────────────────────────────────────────────
+  const addGoal     = useGoalStore((s) => s._socketAdd);
+  const replaceGoal = useGoalStore((s) => s._socketUpdate);
+  const removeGoal  = useGoalStore((s) => s._socketDelete);
 
   useEffect(() => {
     if (!socket || !workspaceId) return;
@@ -75,6 +81,20 @@ export function useWorkspaceSocket(workspaceId) {
       removeTask(itemId);
     }
 
+    // ── Goal events ────────────────────────────────────────────────────────────
+    function onGoalCreated({ workspaceId: wsId, goal }) {
+      if (wsId !== workspaceId) return;
+      addGoal(goal);
+    }
+    function onGoalUpdated({ workspaceId: wsId, goal }) {
+      if (wsId !== workspaceId) return;
+      replaceGoal(goal);
+    }
+    function onGoalDeleted({ workspaceId: wsId, goalId }) {
+      if (wsId !== workspaceId) return;
+      removeGoal(goalId);
+    }
+
     socket.on("new_announcement",      onNewAnnouncement);
     socket.on("announcement_updated",  onAnnouncementUpdated);
     socket.on("announcement_deleted",  onAnnouncementDeleted);
@@ -85,6 +105,9 @@ export function useWorkspaceSocket(workspaceId) {
     socket.on("task_created",          onTaskCreated);
     socket.on("task_updated",          onTaskUpdated);
     socket.on("task_deleted",          onTaskDeleted);
+    socket.on("goal_created",          onGoalCreated);
+    socket.on("goal_updated",          onGoalUpdated);
+    socket.on("goal_deleted",          onGoalDeleted);
 
     return () => {
       socket.off("new_announcement",     onNewAnnouncement);
@@ -97,6 +120,9 @@ export function useWorkspaceSocket(workspaceId) {
       socket.off("task_created",         onTaskCreated);
       socket.off("task_updated",         onTaskUpdated);
       socket.off("task_deleted",         onTaskDeleted);
+      socket.off("goal_created",         onGoalCreated);
+      socket.off("goal_updated",         onGoalUpdated);
+      socket.off("goal_deleted",         onGoalDeleted);
 
       leaveWorkspace(workspaceId);
     };

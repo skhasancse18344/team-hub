@@ -3,6 +3,7 @@ import { Role } from "../../generated/prisma/client";
 import { db } from "../lib/db";
 import { AppError } from "../utils/AppError";
 import { ROLE_RANK } from "../middleware/requireWorkspaceRole";
+import { getUserPermissions } from "../utils/rbac";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -504,6 +505,29 @@ export async function getMyInvites(
     });
 
     res.json({ invites });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ── RBAC ──────────────────────────────────────────────────────────────────────
+
+/**
+ * GET /api/workspaces/:id/my-permissions
+ * Returns the full list of permission keys the calling user holds in this
+ * workspace. The frontend uses this to conditionally show/hide controls
+ * (e.g. "New Announcement" button, "Invite" button) without re-implementing
+ * role logic in the client.
+ */
+export async function getMyPermissions(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const role        = req.membership!.role;
+    const permissions = getUserPermissions(role);
+    res.json({ role, permissions });
   } catch (err) {
     next(err);
   }

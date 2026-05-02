@@ -1,0 +1,55 @@
+/* ── Base ──────────────────────────────────────────────────────── */
+.btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             6px;
+  font-family:     var(--font);
+  font-weight:     500;
+  border:          1px solid transparent;
+  border-radius:   var(--r-sm);
+  cursor:          pointer;
+  transition:      background var(--t2), color var(--t2), border-color var(--t2), opacity var(--t2);
+  white-space:     nowrap;
+  line-height:     1;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Sizes ─────────────────────────────────────────────────────── */
+.sm { padding: 6px 12px;  font-size: 0.8rem;  }
+.md { padding: 9px 18px;  font-size: 0.875rem; }
+.lg { padding: 12px 24px; font-size: 0.95rem;  }
+
+/* ── Variants ──────────────────────────────────────────────────── */
+.primary {
+  background: var(--brand);
+  color:      #fff;
+  border-color: transparent;
+}
+.primary:hover:not(:disabled) { background: var(--brand-hover); }
+
+.secondary {
+  background:   var(--surface-2);
+  color:        var(--text-2);
+  border-color: var(--border);
+}
+.secondary:hover:not(:disabled) { background: var(--surface-3); color: var(--text); }
+
+.ghost {
+  background: transparent;
+  color:      var(--text-2);
+  border-color: transparent;
+}
+.ghost:hover:not(:disabled) { background: var(--surface-2); color: var(--text); }
+
+.danger {
+  background: #f43f5e;
+  color:      #fff;
+  border-color: transparent;
+}
+.danger:hover:not(:disabled) { background: #e11d48; }
+
+/* ── Modifiers ─────────────────────────────────────────────────── */
+.full    { width: 100%; }
+.loading { pointer-events: none; }
+.icon    { display: flex; align-items: center; flex-shrink: 0; }

@@ -12,10 +12,13 @@ import { useWorkspaceStore } from "../../store/useWorkspaceStore";
 import { useGoalStore } from "../../store/useGoalStore";
 import { useSocketStore } from "../../store/useSocketStore";
 import { useNotificationStore } from "../../store/useNotificationStore";
+import { useRbacStore } from "../../store/useRbacStore";
+import { useToastStore } from "../../store/useToastStore";
 import { useWorkspaceSocket } from "../../lib/useWorkspaceSocket";
 import WorkspaceSwitcher from "../../components/WorkspaceSwitcher";
 import OnlineUsers from "../../components/OnlineUsers";
 import NotificationDropdown from "../../components/NotificationDropdown";
+import ToastRegion from "../../components/TaskToastRegion";
 
 const navItems = [
   { href: "/dashboard",               Icon: LayoutDashboard, label: "Overview" },
@@ -30,7 +33,7 @@ const navItems = [
 
 const secondaryItems = [
   { href: "/profile",              Icon: User,     label: "Profile" },
-  { href: "/dashboard/settings",  Icon: Settings, label: "Settings" },
+  // { href: "/dashboard/settings",  Icon: Settings, label: "Settings" },
 ];
 
 export default function DashboardLayout({ children }) {
@@ -41,6 +44,8 @@ export default function DashboardLayout({ children }) {
   const { total: goalTotal } = useGoalStore();
   const { connect, disconnect } = useSocketStore();
   const { fetchNotifications } = useNotificationStore();
+  const { loadPermissions, reset: resetRbac } = useRbacStore();
+  const clearToasts = useToastStore((s) => s.clear);
 
   const badgeCounts = {
     workspaces: workspaces.length || null,
@@ -61,12 +66,19 @@ export default function DashboardLayout({ children }) {
   useEffect(() => {
     if (initialized && !isAuthenticated) {
       disconnect();
+      resetRbac();
+      clearToasts();
       router.replace("/login");
     }
   }, [initialized, isAuthenticated, router]);
 
   // Join / leave the active workspace room
   useWorkspaceSocket(activeWorkspace?.id ?? null);
+
+  // Load RBAC permissions whenever the active workspace changes
+  useEffect(() => {
+    if (activeWorkspace?.id) loadPermissions(activeWorkspace.id);
+  }, [activeWorkspace?.id]);
 
   if (!initialized) {
     return (
@@ -165,6 +177,9 @@ export default function DashboardLayout({ children }) {
         </div>
         {children}
       </main>
+
+      {/* Global optimistic-rollback toast notifications */}
+      <ToastRegion />
     </div>
   );
 }

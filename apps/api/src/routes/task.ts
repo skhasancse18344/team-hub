@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { requireWorkspaceRole } from "../middleware/requireWorkspaceRole";
+import { requirePermission } from "../middleware/requirePermission";
 import {
   getTasks,
   createTask,
@@ -9,9 +9,9 @@ import {
 
 const router = Router({ mergeParams: true });
 
-router.get(    "/",          requireWorkspaceRole("MEMBER"), getTasks);
-router.post(   "/",          requireWorkspaceRole("MEMBER"), createTask);
-router.patch(  "/:itemId",   requireWorkspaceRole("MEMBER"), updateTask);
-router.delete( "/:itemId",   requireWorkspaceRole("MEMBER"), deleteTask);
+router.get(    "/",        requirePermission("tasks:view"),       getTasks);
+router.post(   "/",        requirePermission("tasks:create"),     createTask);
+router.patch(  "/:itemId", requirePermission("tasks:update"),     updateTask);
+router.delete( "/:itemId", requirePermission("tasks:delete_any"), deleteTask);
 
 export default router;

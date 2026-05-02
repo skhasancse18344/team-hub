@@ -9,6 +9,7 @@ import {
 } from "../../generated/prisma/client";
 import { db } from "../lib/db";
 import { AppError } from "../utils/AppError";
+import { emitToWorkspace } from "../socket";
 
 // ─── Internal helpers ─────────────────────────────────────────────────────────
 
@@ -176,6 +177,7 @@ export async function createGoal(
 
     await logActivity(goal.id, userId, GoalActivityType.CREATED);
 
+    emitToWorkspace(workspaceId, "goal_created", { workspaceId, goal, actorId: userId });
     res.status(201).json({ goal });
   } catch (err) {
     next(err);
@@ -258,6 +260,7 @@ export async function updateGoal(
       await logActivity(goalId, userId, GoalActivityType.UPDATED);
     }
 
+    emitToWorkspace(workspaceId, "goal_updated", { workspaceId, goal: updated, actorId: userId });
     res.json({ goal: updated });
   } catch (err) {
     next(err);
@@ -276,6 +279,7 @@ export async function deleteGoal(
     await verifyGoal(goalId, workspaceId);
     await db.goal.delete({ where: { id: goalId } });
 
+    emitToWorkspace(workspaceId, "goal_deleted", { workspaceId, goalId, actorId: req.user!.id });
     res.status(204).send();
   } catch (err) {
     next(err);

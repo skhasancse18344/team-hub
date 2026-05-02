@@ -117,7 +117,7 @@ export async function createTask(
       include: ITEM_INCLUDE,
     });
 
-    emitToWorkspace(workspaceId, "task_created", { workspaceId, item });
+    emitToWorkspace(workspaceId, "task_created", { workspaceId, item, actorId: req.user!.id });
     res.status(201).json({ item });
   } catch (err) { next(err); }
 }
@@ -188,7 +188,7 @@ export async function updateTask(
       include: ITEM_INCLUDE,
     });
 
-    emitToWorkspace(workspaceId, "task_updated", { workspaceId, item });
+    emitToWorkspace(workspaceId, "task_updated", { workspaceId, item, actorId: req.user!.id });
     res.json({ item });
   } catch (err) { next(err); }
 }
@@ -214,7 +214,7 @@ export async function deleteTask(
     }
 
     await db.actionItem.delete({ where: { id: itemId } });
-    emitToWorkspace(workspaceId, "task_deleted", { workspaceId, itemId });
+    emitToWorkspace(workspaceId, "task_deleted", { workspaceId, itemId, actorId: req.user!.id });
     res.json({ message: "Task deleted" });
   } catch (err) { next(err); }
 }

@@ -215,6 +215,17 @@
   cursor: grabbing;
 }
 
+/* Optimistic pending state — item not yet confirmed by the server */
+.cardPending {
+  opacity: 0.65;
+  animation: cardPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes cardPulse {
+  0%, 100% { opacity: 0.65; }
+  50%       { opacity: 0.9;  }
+}
+
 .cardTop {
   display: flex;
   align-items: center;

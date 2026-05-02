@@ -8,6 +8,35 @@ export const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// ── Request interceptor ───────────────────────────────────────────────────────
+// Nothing to inject (cookies are automatic via withCredentials).
+// Hook here for future per-request logic (e.g. locale header, request IDs).
+api.interceptors.request.use(
+  (config) => config,
+  (err)    => Promise.reject(err)
+);
+
+// ── Response interceptor ──────────────────────────────────────────────────────
+// Handle 401 globally: if we get an Unauthorized response while on a protected
+// page, clear local auth state and redirect to /login.
+// We intentionally do NOT redirect during the initial /api/auth/me probe
+// (which legitimately 401s when no session exists) — we guard by checking the
+// current pathname instead of the store to avoid circular imports.
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (
+      error.response?.status === 401 &&
+      typeof window !== "undefined" &&
+      (window.location.pathname.startsWith("/dashboard") ||
+       window.location.pathname.startsWith("/profile"))
+    ) {
+      window.location.replace("/login");
+    }
+    return Promise.reject(error);
+  }
+);
+
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
 export async function loginRequest(email, password) {
@@ -103,6 +132,12 @@ export async function createWorkspaceReq(payload) {
 export async function fetchWorkspace(id) {
   const { data } = await api.get(`/api/workspaces/${id}`);
   return data.workspace;
+}
+
+/** Returns { role, permissions: string[] } for the current user in a workspace */
+export async function fetchMyPermissions(workspaceId) {
+  const { data } = await api.get(`/api/workspaces/${workspaceId}/my-permissions`);
+  return data; // { role, permissions }
 }
 
 export async function updateWorkspaceReq(id, payload) {

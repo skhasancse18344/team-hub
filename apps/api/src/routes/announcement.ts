@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { requireWorkspaceRole } from "../middleware/requireWorkspaceRole";
+import { requirePermission } from "../middleware/requirePermission";
+import { requireOwnership } from "../utils/rbac";
+import { db } from "../lib/db";
+import { AppError } from "../utils/AppError";
 import {
   getAnnouncements,
   createAnnouncement,
@@ -16,23 +19,62 @@ import {
 const router = Router({ mergeParams: true });
 
 // List / create
-router.get( "/",  requireWorkspaceRole("MEMBER"), getAnnouncements);
-router.post("/",  requireWorkspaceRole("ADMIN"),  createAnnouncement);
+router.get( "/",  requirePermission("announcements:view"),   getAnnouncements);
+router.post("/",  requirePermission("announcements:create"), createAnnouncement);
 
-// Single
-router.get(    "/:annId",      requireWorkspaceRole("MEMBER"), getAnnouncement);
-router.patch(  "/:annId",      requireWorkspaceRole("MEMBER"), updateAnnouncement);
-router.delete( "/:annId",      requireWorkspaceRole("MEMBER"), deleteAnnouncement);
+// Single — view any, edit/delete own or ADMIN+
+router.get("/:annId", requirePermission("announcements:view"), getAnnouncement);
 
-// Pin (ADMIN+)
-router.patch("/:annId/pin",    requireWorkspaceRole("ADMIN"),  pinAnnouncement);
+router.patch(
+  "/:annId",
+  requirePermission("announcements:view"),
+  requireOwnership(
+    async (req) => {
+      const a = await db.announcement.findUnique({ where: { id: req.params.annId as string } });
+      if (!a) throw new AppError(404, "Announcement not found");
+      return a.authorId;
+    },
+    "ADMIN"
+  ),
+  updateAnnouncement
+);
+
+router.delete(
+  "/:annId",
+  requirePermission("announcements:view"),
+  requireOwnership(
+    async (req) => {
+      const a = await db.announcement.findUnique({ where: { id: req.params.annId as string } });
+      if (!a) throw new AppError(404, "Announcement not found");
+      return a.authorId;
+    },
+    "ADMIN"
+  ),
+  deleteAnnouncement
+);
+
+// Pin — ADMIN only
+router.patch("/:annId/pin", requirePermission("announcements:pin"), pinAnnouncement);
 
 // Reactions
-router.post("/:annId/reactions", requireWorkspaceRole("MEMBER"), toggleReaction);
+router.post("/:annId/reactions", requirePermission("reactions:toggle"), toggleReaction);
 
-// Comments
-router.get(    "/:annId/comments",              requireWorkspaceRole("MEMBER"), getComments);
-router.post(   "/:annId/comments",              requireWorkspaceRole("MEMBER"), addComment);
-router.delete( "/:annId/comments/:commentId",   requireWorkspaceRole("MEMBER"), deleteComment);
+// Comments — create any, delete own or ADMIN+
+router.get( "/:annId/comments", requirePermission("announcements:view"), getComments);
+router.post("/:annId/comments", requirePermission("comments:create"),   addComment);
+
+router.delete(
+  "/:annId/comments/:commentId",
+  requirePermission("comments:create"),
+  requireOwnership(
+    async (req) => {
+      const c = await db.comment.findUnique({ where: { id: req.params.commentId as string } });
+      if (!c) throw new AppError(404, "Comment not found");
+      return c.userId;
+    },
+    "ADMIN"
+  ),
+  deleteComment
+);
 
 export default router;

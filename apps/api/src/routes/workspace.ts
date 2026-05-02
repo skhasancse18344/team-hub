@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { authenticate } from "../middleware/authenticate";
 import { requireWorkspaceRole } from "../middleware/requireWorkspaceRole";
+import { requirePermission } from "../middleware/requirePermission";
 import goalRouter from "./goal";
 import announcementRouter from "./announcement";
 import taskRouter from "./task";
@@ -20,6 +21,7 @@ import {
   revokeInvite,
   acceptInvite,
   getMyInvites,
+  getMyPermissions,
 } from "../controllers/workspace.controller";
 
 const router = Router();
@@ -31,20 +33,23 @@ router.use(authenticate);
 router.get("/",    getMyWorkspaces);
 router.post("/",   createWorkspace);
 
-router.get(    "/:id", requireWorkspaceRole("MEMBER"), getWorkspace);
-router.patch(  "/:id", requireWorkspaceRole("ADMIN"),  updateWorkspace);
-router.delete( "/:id", requireWorkspaceRole("OWNER"),  deleteWorkspace);
+router.get(    "/:id", requirePermission("workspace:view"),   getWorkspace);
+router.patch(  "/:id", requirePermission("workspace:update"), updateWorkspace);
+router.delete( "/:id", requirePermission("workspace:delete"), deleteWorkspace);
 
 // ── Members ───────────────────────────────────────────────────────────────────
-router.get(    "/:id/members",              requireWorkspaceRole("MEMBER"), getMembers);
-router.patch(  "/:id/members/:memberId",    requireWorkspaceRole("ADMIN"),  updateMemberRole);
-router.delete( "/:id/members/:memberId",    requireWorkspaceRole("ADMIN"),  removeMember);
-router.delete( "/:id/leave",               requireWorkspaceRole("MEMBER"), leaveWorkspace);
+router.get(    "/:id/members",              requirePermission("members:view"),   getMembers);
+router.patch(  "/:id/members/:memberId",    requirePermission("members:manage"), updateMemberRole);
+router.delete( "/:id/members/:memberId",    requirePermission("members:manage"), removeMember);
+router.delete( "/:id/leave",               requirePermission("members:view"),   leaveWorkspace);
 
 // ── Invites ───────────────────────────────────────────────────────────────────
-router.get(    "/:id/invites",              requireWorkspaceRole("ADMIN"),  getInvites);
-router.post(   "/:id/invites",              requireWorkspaceRole("ADMIN"),  inviteMember);
-router.delete( "/:id/invites/:inviteId",    requireWorkspaceRole("ADMIN"),  revokeInvite);
+router.get(    "/:id/invites",              requirePermission("invites:view"),   getInvites);
+router.post(   "/:id/invites",              requirePermission("invites:send"),   inviteMember);
+router.delete( "/:id/invites/:inviteId",    requirePermission("invites:revoke"), revokeInvite);
+
+// ── My permissions (for frontend conditional rendering) ───────────────────────
+router.get("/:id/my-permissions", requirePermission("workspace:view"), getMyPermissions);
 
 // ── Goals (nested router, inherits authenticate) ──────────────────────────────
 router.use("/:id/goals", goalRouter);

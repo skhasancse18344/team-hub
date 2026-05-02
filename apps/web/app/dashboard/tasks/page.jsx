@@ -8,6 +8,7 @@ import {
 import { useWorkspaceStore } from "../../../store/useWorkspaceStore";
 import { useTaskStore }      from "../../../store/useTaskStore";
 import { useAuthStore }      from "../../../store/useAuthStore";
+import { useRbacStore }      from "../../../store/useRbacStore";
 import { fetchGoals }        from "../../../lib/api";
 import styles from "./tasks.module.css";
 
@@ -196,7 +197,7 @@ function TaskModal({ workspaceId, members, goals, existing, defaultStatus, onSav
 
 function TaskCard({
   item, workspaceId, members, goals, isAdmin,
-  userId, onDragStart, onDelete,
+  canDeleteAny, userId, onDragStart, onDelete,
 }) {
   const { updateTask, saving } = useTaskStore();
   const [editing,    setEditing]    = useState(false);
@@ -213,7 +214,8 @@ function TaskCard({
     catch { setDeleting(false); setConfirmDel(false); }
   }
 
-  const canEdit = isAdmin || item.assignee?.id === userId;
+  const canEdit   = isAdmin || item.assignee?.id === userId;
+  const canDelete = canDeleteAny || isAdmin || item.assignee?.id === userId;
 
   if (editing) {
     return (
@@ -232,7 +234,7 @@ function TaskCard({
 
   return (
     <div
-      className={styles.card}
+      className={`${styles.card} ${item._optimistic ? styles.cardPending : ""}`}
       draggable
       onDragStart={(e) => onDragStart(e, item.id)}
       style={{ borderLeftColor: pri.color }}
@@ -263,7 +265,7 @@ function TaskCard({
                 <X size={12} />
               </button>
             </>
-          ) : (
+          ) : canDelete ? (
             <button
               className={`${styles.iconBtn} ${styles.dangerHover}`}
               onClick={() => setConfirmDel(true)}
@@ -271,7 +273,7 @@ function TaskCard({
             >
               <Trash2 size={12} />
             </button>
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -314,7 +316,7 @@ function TaskCard({
 // ─── Kanban Column ────────────────────────────────────────────────────────────
 
 function KanbanColumn({
-  col, items, workspaceId, members, goals, isAdmin, userId,
+  col, items, workspaceId, members, goals, isAdmin, canCreate, canDeleteAny, userId,
   onDragStart, onDragOver, onDrop, onDelete, onAddTask,
 }) {
   const [dragOver, setDragOver] = useState(false);
@@ -344,7 +346,8 @@ function KanbanColumn({
         <button
           className={styles.columnAdd}
           onClick={() => onAddTask(col.status)}
-          title={`Add task to ${col.label}`}
+          disabled={!canCreate}
+          title={canCreate ? `Add task to ${col.label}` : "No permission to create tasks"}
         >
           <Plus size={14} />
         </button>
@@ -367,6 +370,7 @@ function KanbanColumn({
             members={members}
             goals={goals}
             isAdmin={isAdmin}
+            canDeleteAny={canDeleteAny}
             userId={userId}
             onDragStart={onDragStart}
             onDelete={onDelete}
@@ -379,7 +383,7 @@ function KanbanColumn({
 
 // ─── List View ────────────────────────────────────────────────────────────────
 
-function ListView({ items, workspaceId, members, goals, isAdmin, userId, onDelete, onEdit }) {
+function ListView({ items, workspaceId, members, goals, isAdmin, canDeleteAny, userId, onDelete, onEdit }) {
   return (
     <div className={styles.listView}>
       {/* Header row */}
@@ -399,7 +403,8 @@ function ListView({ items, workspaceId, members, goals, isAdmin, userId, onDelet
           const pri = PRIORITY_META[item.priority] ?? PRIORITY_META.MEDIUM;
           const col = COLUMNS.find((c) => c.status === item.status);
           const due = timeLabel(item.dueDate);
-          const canEdit = isAdmin || item.assignee?.id === userId;
+          const canEdit   = isAdmin || item.assignee?.id === userId;
+          const canDelete = canDeleteAny || isAdmin || item.assignee?.id === userId;
 
           return (
             <div key={item.id} className={styles.listRow}>
@@ -452,13 +457,15 @@ function ListView({ items, workspaceId, members, goals, isAdmin, userId, onDelet
                     <Edit3 size={13} />
                   </button>
                 )}
-                <button
-                  className={`${styles.iconBtn} ${styles.dangerHover}`}
-                  onClick={() => onDelete(item.id)}
-                  title="Delete"
-                >
-                  <Trash2 size={13} />
-                </button>
+                {canDelete && (
+                  <button
+                    className={`${styles.iconBtn} ${styles.dangerHover}`}
+                    onClick={() => onDelete(item.id)}
+                    title="Delete"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                )}
               </span>
             </div>
           );
@@ -474,6 +481,7 @@ export default function TasksPage() {
   const { user }                = useAuthStore();
   const { activeWorkspace, members, fetchMembers } = useWorkspaceStore();
   const { items, total, loading, error, fetchTasks, moveTask, deleteTask } = useTaskStore();
+  const { can }                 = useRbacStore();
 
   const [viewMode,       setViewMode]       = useState("kanban"); // "kanban" | "list"
   const [modalOpen,      setModalOpen]      = useState(false);
@@ -488,12 +496,17 @@ export default function TasksPage() {
 
   const workspaceId = activeWorkspace?.id;
 
-  // Derive role
+  // RBAC — use permission store instead of manual role derivation
+  const canCreate    = can("tasks:create");
+  const canDeleteAny = can("tasks:delete_any");
+  // A task is editable if the user has tasks:update AND (is the assignee OR can delete any = admin+)
+  const canUpdateAny = can("tasks:update");
+
+  // Derive role for ownership checks (assignee can always edit their own task)
   const myMembership = members.find(
     (m) => m.user?.id === user?.id || m.userId === user?.id
   );
-  const myRole  = myMembership?.role ?? null;
-  const isAdmin = myRole === "ADMIN" || myRole === "OWNER";
+  const isAdmin = myMembership?.role === "ADMIN" || myMembership?.role === "OWNER";
 
   // Load on mount / workspace change
   useEffect(() => {
@@ -580,6 +593,8 @@ export default function TasksPage() {
           className="btn btn-primary"
           style={{ display: "flex", alignItems: "center", gap: 6 }}
           onClick={() => openCreate()}
+          disabled={!canCreate}
+          title={canCreate ? undefined : "You don't have permission to create tasks"}
         >
           <Plus size={16} /> New task
         </button>
@@ -675,6 +690,8 @@ export default function TasksPage() {
               members={members}
               goals={goals}
               isAdmin={isAdmin}
+              canCreate={canCreate}
+              canDeleteAny={canDeleteAny}
               userId={user?.id}
               onDragStart={handleDragStart}
               onDragOver={handleDragOver}
@@ -692,6 +709,7 @@ export default function TasksPage() {
           members={members}
           goals={goals}
           isAdmin={isAdmin}
+          canDeleteAny={canDeleteAny}
           userId={user?.id}
           onDelete={handleDelete}
           onEdit={openEdit}
