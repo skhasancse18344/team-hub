@@ -1,7 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// Team Hub — Production Prisma Schema
+// Prisma 7 | PostgreSQL
 
 generator client {
   provider = "prisma-client"
@@ -10,5 +8,288 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
+
+// ─────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+
+  @@map("role")
+}
+
+enum GoalStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+
+  @@map("goal_status")
+}
+
+enum MilestoneStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+
+  @@map("milestone_status")
+}
+
+enum ActionStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+  CANCELLED
+
+  @@map("action_status")
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+
+  @@map("priority")
+}
+
+enum NotificationType {
+  MENTION
+  GOAL_UPDATE
+  ACTION_ASSIGNED
+  ANNOUNCEMENT
+  MEMBERSHIP
+
+  @@map("notification_type")
+}
+
+// ─────────────────────────────────────────
+// USER
+// ─────────────────────────────────────────
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships   Membership[]
+  ownedGoals    Goal[]         @relation("GoalOwner")
+  assignedItems ActionItem[]   @relation("AssignedUser")
+  comments      Comment[]
+  reactions     Reaction[]
+  notifications Notification[]
+  announcements Announcement[]
+
+  @@map("users")
+}
+
+// ─────────────────────────────────────────
+// WORKSPACE
+// ─────────────────────────────────────────
+
+model Workspace {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  color       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  memberships   Membership[]
+  goals         Goal[]
+  announcements Announcement[]
+  actionItems   ActionItem[]
+
+  @@map("workspaces")
+}
+
+// ─────────────────────────────────────────
+// MEMBERSHIP
+// ─────────────────────────────────────────
+
+model Membership {
+  id          String   @id @default(uuid())
+  userId      String
+  workspaceId String
+  role        Role     @default(MEMBER)
+  joinedAt    DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, workspaceId])
+  @@index([workspaceId])
+  @@map("memberships")
+}
+
+// ─────────────────────────────────────────
+// GOAL
+// ─────────────────────────────────────────
+
+model Goal {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  status      GoalStatus @default(NOT_STARTED)
+  priority    Priority   @default(MEDIUM)
+  dueDate     DateTime?
+  ownerId     String
+  workspaceId String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  owner       User      @relation("GoalOwner", fields: [ownerId], references: [id])
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  milestones  Milestone[]
+  actionItems ActionItem[]
+  comments    Comment[]
+
+  @@index([workspaceId])
+  @@index([ownerId])
+  @@index([status])
+  @@map("goals")
+}
+
+// ─────────────────────────────────────────
+// MILESTONE
+// ─────────────────────────────────────────
+
+model Milestone {
+  id        String          @id @default(uuid())
+  title     String
+  status    MilestoneStatus @default(PENDING)
+  progress  Int             @default(0) // 0–100
+  dueDate   DateTime?
+  goalId    String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@index([goalId])
+  @@map("milestones")
+}
+
+// ─────────────────────────────────────────
+// ACTION ITEM
+// ─────────────────────────────────────────
+
+model ActionItem {
+  id          String       @id @default(uuid())
+  title       String
+  description String?
+  status      ActionStatus @default(TODO)
+  priority    Priority     @default(MEDIUM)
+  dueDate     DateTime?
+  assigneeId  String?
+  goalId      String?
+  workspaceId String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  assignee  User?      @relation("AssignedUser", fields: [assigneeId], references: [id], onDelete: SetNull)
+  goal      Goal?      @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([goalId])
+  @@index([assigneeId])
+  @@index([status])
+  @@map("action_items")
+}
+
+// ─────────────────────────────────────────
+// ANNOUNCEMENT
+// ─────────────────────────────────────────
+
+model Announcement {
+  id          String   @id @default(uuid())
+  content     String
+  isPinned    Boolean  @default(false)
+  authorId    String
+  workspaceId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  author    User      @relation(fields: [authorId], references: [id])
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+  reactions Reaction[]
+
+  @@index([workspaceId])
+  @@index([isPinned])
+  @@map("announcements")
+}
+
+// ─────────────────────────────────────────
+// COMMENT
+// ─────────────────────────────────────────
+
+model Comment {
+  id             String   @id @default(uuid())
+  content        String
+  userId         String
+  goalId         String?
+  announcementId String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal         Goal?         @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  announcement Announcement? @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  @@index([goalId])
+  @@index([announcementId])
+  @@index([userId])
+  @@map("comments")
+}
+
+// ─────────────────────────────────────────
+// REACTION
+// ─────────────────────────────────────────
+
+model Reaction {
+  id             String   @id @default(uuid())
+  emoji          String
+  userId         String
+  announcementId String
+  createdAt      DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  announcement Announcement @relation(fields: [announcementId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, announcementId, emoji])
+  @@index([announcementId])
+  @@map("reactions")
+}
+
+// ─────────────────────────────────────────
+// NOTIFICATION
+// ─────────────────────────────────────────
+
+model Notification {
+  id        String           @id @default(uuid())
+  type      NotificationType
+  message   String
+  userId    String
+  isRead    Boolean          @default(false)
+  link      String?          // deep-link to the relevant resource
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("notifications")
+}
+
