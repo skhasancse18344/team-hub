@@ -32,7 +32,7 @@ export default function ProfileClient() {
       await updateProfile({ name: name.trim() });
       await initialize();
       setSaveOk(true);
-      setTimeout(() => setSaveOk(false), 3027);
+      setTimeout(() => setSaveOk(false), 3000);
     } catch { /* error in store */ }
   }
 

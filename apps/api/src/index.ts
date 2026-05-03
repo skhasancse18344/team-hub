@@ -15,7 +15,7 @@ const app = express();
 const httpServer = createServer(app);
 
 app.use(cors({
-  origin: process.env.CLIENT_URL ?? "http://localhost:3027",
+  origin: process.env.CLIENT_URL ?? "http://localhost:3000",
   credentials: true, // required for cookies cross-origin
 }));
 app.use(express.json());
