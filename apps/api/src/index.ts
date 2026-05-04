@@ -15,7 +15,7 @@ const app = express();
 const httpServer = createServer(app);
 
 app.use(cors({
-  origin: process.env.CLIENT_URL ?? "http://localhost:3000",
+  origin: process.env.CLIENT_URL ?? "http://localhost:3027",
   credentials: true, // required for cookies cross-origin
 }));
 app.use(express.json());
@@ -31,7 +31,7 @@ app.use(errorHandler);
 
 initSocket(httpServer);
 
-const PORT = process.env.PORT ?? 4000;
+const PORT = process.env.PORT ?? 3026;
 
 httpServer.listen(PORT, () => {
   console.log(`API server running on http://localhost:${PORT}`);
